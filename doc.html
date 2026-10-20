@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skills 中文翻译</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f4;
+    --surface: #ffffff;
+    --surface-2: #efefeb;
+    --fg: #1c1c1e;
+    --muted: #666a70;
+    --border: #d7d7d2;
+    --accent: #2457d6;
+    --accent-soft: #e8eeff;
+    --doc-font-size: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111214;
+      --surface: #1a1c1f;
+      --surface-2: #22252a;
+      --fg: #e9e9e6;
+      --muted: #a1a5ab;
+      --border: #34383e;
+      --accent: #7da2ff;
+      --accent-soft: #1b2740;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.78 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding-top: env(safe-area-inset-top);
+  }
+  .topbar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .back {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .back:hover { text-decoration: underline; }
+  .doc-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+  }
+  .actions { display: flex; align-items: center; gap: 6px; }
+  .actions button,
+  .actions a {
+    font: inherit;
+    color: var(--fg);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 9px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .actions button:hover,
+  .actions a:hover { border-color: var(--accent); color: var(--accent); }
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 26px 20px calc(90px + env(safe-area-inset-bottom));
+    font-size: var(--doc-font-size);
+    line-height: 1.8;
+  }
+  main > :first-child { margin-top: 0; }
+  h2 {
+    margin: 38px 0 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 1.48em;
+    line-height: 1.3;
+    letter-spacing: -.01em;
+  }
+  h2:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+  h3 { margin: 26px 0 8px; font-size: 1.16em; line-height: 1.35; }
+  h4 { margin: 20px 0 6px; font-size: 1em; }
+  p { margin: 0 0 13px; }
+  ul, ol { margin: 0 0 15px; padding-left: 25px; }
+  li { margin: 5px 0; }
+  blockquote {
+    margin: 16px 0;
+    padding: 10px 15px;
+    border-left: 3px solid var(--accent);
+    background: var(--surface-2);
+    color: var(--muted);
+    border-radius: 0 8px 8px 0;
+  }
+  blockquote p:last-child { margin-bottom: 0; }
+  hr { border: 0; border-top: 1px solid var(--border); margin: 26px 0; }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  code {
+    font: .88em/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 5px;
+    overflow-wrap: anywhere;
+  }
+  pre {
+    margin: 15px 0 18px;
+    padding: 14px 16px;
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    line-height: 1.55;
+  }
+  pre code { border: 0; background: none; padding: 0; font-size: .9em; }
+  .table-wrap { overflow-x: auto; margin: 16px 0 20px; border: 1px solid var(--border); border-radius: 10px; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: .92em; }
+  th, td { padding: 9px 11px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  th { background: var(--surface-2); color: var(--muted); font-size: .9em; }
+  tr:last-child td { border-bottom: 0; }
+  img { max-width: 100%; height: auto; border-radius: 8px; }
+  .empty {
+    margin: 18vh auto 0;
+    max-width: 520px;
+    text-align: center;
+    color: var(--muted);
+    padding: 24px;
+  }
+  .empty strong { display: block; color: var(--fg); font-size: 20px; margin-bottom: 8px; }
+  .empty a { display: inline-block; margin-top: 14px; }
+  @media (max-width: 700px) {
+    .topbar-inner {
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 9px 12px;
+    }
+    .back { grid-row: 1; grid-column: 1; justify-self: start; }
+    .doc-title { display: none; }
+    .actions { grid-row: 1; grid-column: 2; }
+    .actions button, .actions a { padding: 7px 9px; }
+    main { padding: 20px 16px calc(80px + env(safe-area-inset-bottom)); }
+    pre { font-size: 12px; }
+    h2 { font-size: 1.35em; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="back" href="./">← 返回主页面</a>
+    <div class="doc-title" id="docTitle">中文翻译</div>
+    <div class="actions">
+      <button id="fontMinus" type="button" title="减小字号">A−</button>
+      <button id="fontPlus" type="button" title="增大字号">A+</button>
+      <a id="sourceLink" href="#" target="_blank" rel="noopener" hidden>英文原文</a>
+    </div>
+  </div>
+</header>
+
+<main id="docBody">
+  <div class="empty"><div><strong>正在载入</strong><p>请稍候。</p></div></div>
+</main>
+
+<script src="reading-guide-marked.js"></script>
+<script src="reading-guide-data.js"></script>
+<script>
+(function () {
+  const docs = window.SKILL_DOCS || {};
+  const body = document.getElementById("docBody");
+  const titleEl = document.getElementById("docTitle");
+  const sourceEl = document.getElementById("sourceLink");
+
+  function normalize(href) {
+    let h = (href || "").split("#")[0].split("?")[0];
+    try { h = decodeURIComponent(h); } catch (e) {}
+    return h.replace(/^\.\//, "");
+  }
+
+  function toRepoKey(href) {
+    let h = href || "";
+    try {
+      const url = new URL(h, location.href);
+      const rootPath = decodeURIComponent(new URL(".", location.href).pathname);
+      const path = decodeURIComponent(url.pathname);
+      if ((url.protocol === "file:" || url.origin === location.origin) && path.indexOf(rootPath) === 0) {
+        h = path.slice(rootPath.length);
+      }
+    } catch (e) {}
+    return normalize(h);
+  }
+
+  function sourceUrl(key) {
+    if (/^https?:/i.test(key)) return key;
+    return "https://github.com/mattpocock/skills/blob/main/" + key.split("/").map(encodeURIComponent).join("/");
+  }
+
+  function displayName(key) {
+    const skill = key.match(/^skills\/(?:engineering|productivity|in-progress|misc|deprecated)\/([^/]+)\/SKILL\.md$/i);
+    if (skill) return skill[1];
+    return key.split("/").pop().replace(/\.md$/i, "");
+  }
+
+  function keyFromLocation() {
+    const hash = decodeURIComponent(location.hash.replace(/^#doc=/, ""));
+    if (hash && docs[hash]) return hash;
+    const query = new URLSearchParams(location.search).get("doc");
+    if (query && docs[query]) return query;
+    return null;
+  }
+
+  function wrapTables() {
+    body.querySelectorAll("table").forEach(function (table) {
+      if (table.parentElement && table.parentElement.classList.contains("table-wrap")) return;
+      const wrap = document.createElement("div");
+      wrap.className = "table-wrap";
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+  }
+
+  function docHref(key) {
+    return "doc.html#doc=" + encodeURIComponent(key);
+  }
+
+  function fixLinks(key) {
+    const sourceBase = new URL(key, location.href);
+    body.querySelectorAll("a[href]").forEach(function (a) {
+      const href = a.getAttribute("href");
+      if (!href || /^(https?:|#|mailto:)/i.test(href)) return;
+
+      const direct = toRepoKey(href);
+      if (docs[direct]) {
+        a.setAttribute("href", docHref(direct));
+        return;
+      }
+
+      try {
+        const absolute = new URL(href, sourceBase);
+        const repoKey = toRepoKey(absolute.href);
+        if (docs[repoKey]) {
+          a.setAttribute("href", docHref(repoKey));
+        } else if (/\.md($|[#?])/i.test(repoKey)) {
+          a.setAttribute("href", sourceUrl(repoKey));
+        } else {
+          a.setAttribute("href", absolute.href);
+        }
+      } catch (e) {}
+    });
+  }
+
+  function renderEmpty(message) {
+    titleEl.textContent = "中文翻译";
+    document.title = "Skills 中文翻译";
+    body.innerHTML = '<div class="empty"><div><strong>' + message + '</strong><p>这个链接没有指定有效的文档。</p><a href="./">返回主页面</a></div></div>';
+    sourceEl.hidden = true;
+  }
+
+  function load() {
+    const key = keyFromLocation();
+    if (!key) { renderEmpty("未选择文档"); return; }
+    const doc = docs[key];
+    if (!doc) { renderEmpty("这篇还没有中文翻译"); return; }
+
+    titleEl.textContent = doc.title || displayName(key);
+    document.title = (doc.title || displayName(key)) + " · Skills 中文翻译";
+    sourceEl.href = sourceUrl(key);
+    sourceEl.hidden = false;
+    body.innerHTML = window.marked.parse(doc.markdown, { gfm: true, breaks: false });
+    wrapTables();
+    fixLinks(key);
+    window.scrollTo(0, 0);
+  }
+
+  body.addEventListener("click", function (event) {
+    const link = event.target.closest ? event.target.closest('a[href^="doc.html#doc="]') : null;
+    if (!link) return;
+    event.preventDefault();
+    const key = decodeURIComponent(link.getAttribute("href").split("#doc=")[1] || "");
+    if (!docs[key]) return;
+    history.replaceState(null, "", "#doc=" + encodeURIComponent(key));
+    load();
+  });
+
+  window.addEventListener("hashchange", load);
+
+  let fontSize = 16;
+  document.getElementById("fontMinus").addEventListener("click", function () {
+    fontSize = Math.max(12, fontSize - 1);
+    document.documentElement.style.setProperty("--doc-font-size", fontSize + "px");
+  });
+  document.getElementById("fontPlus").addEventListener("click", function () {
+    fontSize = Math.min(22, fontSize + 1);
+    document.documentElement.style.setProperty("--doc-font-size", fontSize + "px");
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

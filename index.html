@@ -523,19 +523,8 @@
 
   @media (max-width: 900px) {
     body.panel-open .wrap { width: auto; max-width: 1180px; margin: 0 auto; }
-    .doc-panel {
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 100vw;
-      max-width: none;
-      min-width: 0;
-      border: 0;
-      border-radius: 0;
-    }
-    .doc-panel-resize { display: none; }
-    .doc-panel-body { padding: 18px 18px 60px; }
-    .doc-panel-open { right: 14px; bottom: 14px; }
+    .doc-panel,
+    .doc-panel-open { display: none !important; }
   }
   @media (max-width: 700px) {
     body { font-size: 14px; }
@@ -623,7 +612,7 @@
     <a href="#traps">常见坑</a>
   </nav>
   <p class="panel-hint">点击任意文档名，右侧浮窗载入中文翻译。拖动浮窗左边缘可以调整宽度，<kbd>Esc</kbd> 关闭。</p>
-  <p class="mobile-hint">手机上点文档名会全屏打开中文翻译；返回键先关闭浮窗，再按一次才退出网页。表格可以左右滑动查看完整内容。</p>
+  <p class="mobile-hint">手机上点文档名会打开独立阅读页；返回键直接回主页面。表格可以左右滑动查看完整内容。</p>
 </header>
 
 <section id="how">
@@ -1473,6 +1462,10 @@ cd learn-rls
   let activeLink = null;
   let panelHistory = false;
 
+  function isMobile() {
+    return window.matchMedia("(max-width: 900px)").matches;
+  }
+
   function normalize(href) {
     let h = (href || "").split("#")[0].split("?")[0];
     try { h = decodeURIComponent(h); } catch (e) {}
@@ -1635,6 +1628,10 @@ cd learn-rls
     const key = docKeyForHref(href);
     if (!key) return;
     event.preventDefault();
+    if (isMobile()) {
+      location.href = "doc.html#doc=" + encodeURIComponent(key);
+      return;
+    }
     openDoc(href, panel.hidden ? "push" : "replace");
   });
 
@@ -1673,6 +1670,17 @@ cd learn-rls
   resizeEl.addEventListener("pointercancel", function () { dragging = false; });
 
   const initial = decodeURIComponent(location.hash.replace(/^#doc=/, ""));
+
+  if (isMobile()) {
+    if (initial && docs[initial]) {
+      location.replace("doc.html#doc=" + encodeURIComponent(initial));
+      return;
+    }
+    hidePanel();
+    document.body.classList.remove("panel-open");
+    return;
+  }
+
   const startKey = initial && docs[initial] ? initial : "docs/engineering/ask-matt.md";
   try {
     if (initial) history.replaceState({ panel: false }, "", location.pathname + location.search);

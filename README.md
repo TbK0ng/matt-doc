@@ -20,7 +20,8 @@ https://tbk0ng.github.io/matt-doc/
 ## 页面结构
 
 ```text
-index.html                页面本体
+index.html                主页面
+doc.html                  手机端独立阅读页
 reading-guide-data.js     50 篇中文翻译数据
 reading-guide-marked.js   Markdown 渲染器
 ```
@@ -29,13 +30,13 @@ reading-guide-marked.js   Markdown 渲染器
 
 ## 交互
 
-- 点击左侧任意文档名，右侧浮窗载入中文翻译
-- 拖动浮窗左边缘调整宽度
-- `A−` / `A+` 调整字号
+- 桌面端点击文档名，右侧浮窗载入中文翻译
+- 拖动浮窗左边缘调整宽度，`A−` / `A+` 调整字号
 - `Esc` 或 `×` 关闭，底部按钮重新打开
-- `#doc=docs/engineering/to-tickets.md` 形式的深链可以直接打开某篇
-- 手机端自动变成全屏阅读页，表格支持横向滑动
-- 手机返回键先关闭浮窗，再按一次才退出网页
+- 手机端点击文档名会打开 `doc.html` 独立阅读页，不再使用浮窗
+- 手机返回键从文档页直接回主页面
+- 文档页内部切换文档使用 replaceState，不会堆叠历史
+- `#doc=docs/engineering/to-tickets.md` 形式的深链可以直接打开某篇，手机端会自动转到文档页
 
 ## 翻译说明
 
