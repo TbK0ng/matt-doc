@@ -1,0 +1,1652 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skills 阅读与使用地图</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f6f3;
+    --surface: #ffffff;
+    --surface-2: #efefeb;
+    --fg: #1c1c1e;
+    --muted: #666a70;
+    --border: #d7d7d2;
+    --accent: #2457d6;
+    --accent-soft: #e8eeff;
+    --success: #0f7a4d;
+    --success-soft: #e3f5ec;
+    --warning: #a15c00;
+    --warning-soft: #fff3dd;
+    --error: #b42318;
+    --error-soft: #fde8e6;
+    --c1: #2457d6;
+    --c2: #0f7a4d;
+    --c3: #a15c00;
+    --c4: #7c3aed;
+    --c5: #be123c;
+    --c6: #0e7490;
+    --panel-w: 50vw;
+    --doc-font-size: 15px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111214;
+      --surface: #1a1c1f;
+      --surface-2: #22252a;
+      --fg: #e9e9e6;
+      --muted: #a1a5ab;
+      --border: #34383e;
+      --accent: #7da2ff;
+      --accent-soft: #1b2740;
+      --success: #5fd39c;
+      --success-soft: #12301f;
+      --warning: #f0ae4d;
+      --warning-soft: #35260f;
+      --error: #ff8a80;
+      --error-soft: #351715;
+      --c1: #7da2ff;
+      --c2: #5fd39c;
+      --c3: #f0ae4d;
+      --c4: #b99cff;
+      --c5: #ff8aa8;
+      --c6: #67d3e8;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.68 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 36px 22px 90px; }
+  header { padding: 14px 0 28px; border-bottom: 1px solid var(--border); }
+  .kicker {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  h1 { margin: 0 0 12px; font-size: clamp(30px, 5vw, 48px); line-height: 1.15; letter-spacing: -.02em; }
+  .lede { max-width: 850px; margin: 0; color: var(--muted); font-size: 17px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 22px; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat b { display: block; font-size: 22px; line-height: 1.2; color: var(--fg); }
+  .stat span { color: var(--muted); font-size: 13px; }
+  nav.toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+  }
+  nav.toc a {
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 6px 10px;
+    border-radius: 999px;
+  }
+  nav.toc a:hover { border-color: var(--accent); color: var(--accent); }
+  section { margin-top: 48px; }
+  h2 { margin: 0 0 8px; font-size: 26px; letter-spacing: -.01em; }
+  h3 { margin: 26px 0 8px; font-size: 18px; }
+  .section-lede { margin: 0 0 18px; color: var(--muted); max-width: 880px; }
+  a { color: var(--accent); }
+  code {
+    font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 5px;
+  }
+  pre {
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  pre code { border: 0; background: none; padding: 0; }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 14px 16px;
+    border-radius: 0 10px 10px 0;
+    margin: 18px 0;
+  }
+  .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+  .callout.danger { border-left-color: var(--error); background: var(--error-soft); }
+  .callout p { margin: 0; }
+  .callout p + p { margin-top: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .card .route { display: block; margin-top: 8px; color: var(--fg); font-size: 13px; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    line-height: 1.4;
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+    white-space: nowrap;
+  }
+  .tag.core { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .tag.entry { color: var(--success); border-color: var(--success); background: var(--success-soft); }
+  .tag.standalone { color: var(--warning); border-color: var(--warning); background: var(--warning-soft); }
+  .tag.ref { color: var(--c4); border-color: var(--c4); }
+  .tag.archived { color: var(--muted); text-decoration: line-through; }
+  .tag.beta { color: var(--c6); border-color: var(--c6); }
+  .tag.misc { color: var(--c5); border-color: var(--c5); }
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+  th { background: var(--surface-2); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  tr.stage td {
+    background: var(--surface-2);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding-top: 12px;
+    padding-bottom: 8px;
+  }
+  td.num { width: 42px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .flow-shell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px;
+    overflow-x: auto;
+  }
+  .flow-shell svg { display: block; min-width: 900px; width: 100%; height: auto; }
+  .node { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
+  .node.primary { stroke: var(--accent); }
+  .node.setup { stroke: var(--muted); stroke-dasharray: 6 4; }
+  .node.entry { stroke: var(--success); }
+  .node.optional { stroke: var(--warning); }
+  .node.muted { stroke: var(--border); }
+  .node-text { fill: var(--fg); font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+  .node-sub { fill: var(--muted); font-size: 11px; text-anchor: middle; dominant-baseline: middle; }
+  .diamond { fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; }
+  .edge { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .edge.dashed { stroke-dasharray: 6 5; marker-end: url(#arrow-muted); }
+  .edge.accent { stroke: var(--accent); marker-end: url(#arrow-accent); }
+  .edge-label { fill: var(--muted); font-size: 11px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 12px; padding: 10px 6px 2px; }
+  .legend span::before { content: ""; display: inline-block; width: 24px; height: 0; border-top: 2px solid var(--muted); vertical-align: middle; margin-right: 6px; }
+  .legend .dash::before { border-top-style: dashed; }
+  .legend .accent::before { border-top-color: var(--accent); }
+  ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+  ol.steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 12px 16px 12px 52px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  ul.checks { list-style: none; padding: 0; margin: 0; }
+  ul.checks li { padding: 6px 0 6px 26px; position: relative; border-bottom: 1px solid var(--border); }
+  ul.checks li:last-child { border-bottom: 0; }
+  ul.checks li::before { content: "□"; position: absolute; left: 2px; color: var(--muted); }
+  .small { font-size: 13px; color: var(--muted); }
+  .panel-hint {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  kbd {
+    font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 0 4px;
+    background: var(--surface);
+  }
+
+  /* Right-side floating document panel */
+  body.panel-open .wrap {
+    width: calc(100vw - var(--panel-w) - 64px);
+    max-width: none;
+    margin-left: 22px;
+    margin-right: auto;
+  }
+  .doc-panel {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    bottom: 18px;
+    width: var(--panel-w);
+    min-width: 360px;
+    max-width: 82vw;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, .24);
+    overflow: hidden;
+  }
+  .doc-panel[hidden] { display: none; }
+  .doc-panel.minimized { bottom: auto; height: auto; }
+  .doc-panel.minimized .doc-panel-tools,
+  .doc-panel.minimized .doc-panel-body,
+  .doc-panel.minimized .doc-panel-resize { display: none; }
+  .doc-panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px 12px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .doc-panel-kicker {
+    display: block;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .doc-panel-title {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    letter-spacing: -.01em;
+    overflow-wrap: anywhere;
+  }
+  .doc-panel-actions { display: flex; gap: 6px; flex: none; }
+  .doc-panel-actions button,
+  .doc-panel-tools button,
+  .doc-panel-open {
+    font: inherit;
+    color: var(--fg);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .doc-panel-actions button {
+    width: 30px;
+    height: 30px;
+    line-height: 1;
+    font-size: 18px;
+  }
+  .doc-panel-actions button:hover,
+  .doc-panel-tools button:hover,
+  .doc-panel-open:hover { border-color: var(--accent); color: var(--accent); }
+  .doc-panel-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 18px 9px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .doc-panel-tools .font-controls { display: flex; gap: 5px; align-items: center; }
+  .doc-panel-tools button { padding: 3px 9px; font-size: 12px; }
+  .doc-panel-tools a { color: var(--accent); text-decoration: none; }
+  .doc-panel-tools a:hover { text-decoration: underline; }
+  .doc-panel-body {
+    flex: 1;
+    overflow: auto;
+    padding: 22px 26px 70px 28px;
+    font-size: var(--doc-font-size);
+    line-height: 1.78;
+    scroll-behavior: smooth;
+  }
+  .doc-panel-body > :first-child { margin-top: 0; }
+  .doc-panel-body h2 {
+    margin: 34px 0 10px;
+    padding-top: 4px;
+    font-size: 1.42em;
+    line-height: 1.3;
+    letter-spacing: -.01em;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+  .doc-panel-body h2:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+  .doc-panel-body h3 { margin: 24px 0 8px; font-size: 1.15em; line-height: 1.35; }
+  .doc-panel-body h4 { margin: 20px 0 6px; font-size: 1em; }
+  .doc-panel-body p { margin: 0 0 12px; }
+  .doc-panel-body ul,
+  .doc-panel-body ol { margin: 0 0 14px; padding-left: 24px; }
+  .doc-panel-body li { margin: 4px 0; }
+  .doc-panel-body blockquote {
+    margin: 16px 0;
+    padding: 10px 14px;
+    border-left: 3px solid var(--accent);
+    background: var(--surface-2);
+    color: var(--muted);
+    border-radius: 0 8px 8px 0;
+  }
+  .doc-panel-body blockquote p:last-child { margin-bottom: 0; }
+  .doc-panel-body hr { border: 0; border-top: 1px solid var(--border); margin: 24px 0; }
+  .doc-panel-body a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  .doc-panel-body code {
+    font: .88em/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 5px;
+    overflow-wrap: anywhere;
+  }
+  .doc-panel-body pre {
+    margin: 14px 0 16px;
+    padding: 13px 15px;
+    overflow: auto;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    line-height: 1.55;
+  }
+  .doc-panel-body pre code { border: 0; background: none; padding: 0; font-size: .9em; }
+  .doc-panel-body .doc-table-wrap { overflow-x: auto; margin: 14px 0 18px; border: 1px solid var(--border); border-radius: 9px; }
+  .doc-panel-body table { width: 100%; border-collapse: collapse; font-size: .92em; }
+  .doc-panel-body th,
+  .doc-panel-body td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  .doc-panel-body th { background: var(--surface-2); color: var(--muted); font-size: .9em; }
+  .doc-panel-body tr:last-child td { border-bottom: 0; }
+  .doc-panel-body img { max-width: 100%; height: auto; border-radius: 8px; }
+  .doc-panel-body strong { font-weight: 700; }
+  .doc-panel-resize {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 9px;
+    cursor: ew-resize;
+    z-index: 2;
+  }
+  .doc-panel-resize::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 50%;
+    width: 2px;
+    height: 42px;
+    margin-top: -21px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .doc-panel-open {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 90;
+    padding: 10px 15px;
+    font-size: 13px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+  }
+  body.panel-open .doc-panel-open { display: none; }
+  .doc-empty {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    text-align: center;
+    color: var(--muted);
+    padding: 30px;
+  }
+  .doc-empty strong { display: block; color: var(--fg); font-size: 17px; margin-bottom: 6px; }
+  .active-doc { background: var(--accent-soft); color: var(--accent); border-radius: 4px; }
+
+  /* Concrete project walkthrough */
+  .timeline { position: relative; margin-top: 18px; }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+  details.act {
+    position: relative;
+    margin: 0 0 14px 0;
+    padding-left: 54px;
+  }
+  details.act > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  details.act > summary::-webkit-details-marker { display: none; }
+  details.act > summary::after {
+    content: "+";
+    margin-left: auto;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1;
+  }
+  details.act[open] > summary::after { content: "−"; }
+  details.act[open] > summary {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+  }
+  .act-num {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: -45px;
+    z-index: 1;
+  }
+  .act-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 12px 12px;
+    padding: 14px 18px 18px;
+  }
+  .act-body > :first-child { margin-top: 0; }
+  .act-body > :last-child { margin-bottom: 0; }
+  .act-body h3 { margin: 18px 0 6px; font-size: 16px; }
+  .act-body h3:first-child { margin-top: 0; }
+  .act-body p { margin: 0 0 10px; }
+  .act-body ul,
+  .act-body ol { margin: 0 0 12px; padding-left: 22px; }
+  .act-body li { margin: 4px 0; }
+  .act-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
+  .act-body pre { margin: 10px 0 12px; }
+  .act-body table { font-size: 13px; }
+  .mobile-flow { display: none; }
+  .mobile-hint { display: none; }
+
+  @media (max-width: 900px) {
+    body.panel-open .wrap { width: auto; max-width: 1180px; margin: 0 auto; }
+    .doc-panel {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      max-width: none;
+      min-width: 0;
+      border: 0;
+      border-radius: 0;
+    }
+    .doc-panel-resize { display: none; }
+    .doc-panel-body { padding: 18px 18px 60px; }
+    .doc-panel-open { right: 14px; bottom: 14px; }
+  }
+  @media (max-width: 700px) {
+    body { font-size: 14px; }
+    .wrap { padding: 24px 14px 70px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 22px; }
+    .lede { font-size: 15px; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stat { padding: 12px; }
+    .stat b { font-size: 20px; }
+    .table-wrap { -webkit-overflow-scrolling: touch; }
+    .flow-shell { display: none; }
+    .mobile-flow { display: grid; gap: 8px; }
+    .mobile-flow .mf-step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .mobile-flow .mf-step b {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 11px;
+    }
+    .mobile-flow .mf-step span { color: var(--muted); }
+    .mobile-hint { display: block; margin: 10px 0 0; color: var(--muted); font-size: 12px; }
+    .timeline::before { display: none; }
+    details.act { padding-left: 0; }
+    details.act > summary { padding: 13px 14px; }
+    .act-num { margin-left: 0; margin-bottom: 0; }
+    .act-body { padding: 14px; }
+    .act-body table { font-size: 12px; }
+    .doc-panel-head { padding: 14px 12px 10px 16px; }
+    .doc-panel-actions button { width: 36px; height: 36px; }
+    .doc-panel-tools { padding: 8px 12px 8px 16px; font-size: 12px; }
+    .doc-panel-body { padding: 18px 16px calc(70px + env(safe-area-inset-bottom)); }
+    .doc-panel-body pre { font-size: 12px; }
+    .doc-panel-open { padding: 12px 16px; }
+    pre { font-size: 12px; }
+  }
+  @media print {
+    .doc-panel, .doc-panel-open { display: none !important; }
+    body.panel-open .wrap { width: auto; max-width: 1180px; margin: 0 auto; }
+  }
+  @media print {
+    body { background: #fff; color: #000; }
+    nav.toc { display: none; }
+    .flow-shell { overflow: visible; }
+    section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Matt Pocock Skills · Reading &amp; Usage Map</div>
+  <h1>Skills 阅读与使用地图</h1>
+  <p class="lede">先读地图，再读技能；先跑主链，再按需展开入口、独立工具和参考层。这个页面把 29 个 docs 文件、2 个非推广桶和 27 个当前插件技能放在同一张图上。点击任意文档名，右侧浮窗直接显示 AI 中文翻译。</p>
+  <div class="stats">
+    <div class="stat"><b>29</b><span>docs 文件（28 技能页 + 1 标签映射）</span></div>
+    <div class="stat"><b>27</b><span>插件内推广技能</span></div>
+    <div class="stat"><b>50</b><span>篇中文翻译（含支持文档与非推广技能）</span></div>
+    <div class="stat"><b>5</b><span>阶段边界选项</span></div>
+    <div class="stat"><b>1</b><span>主链，2 个 on-ramp</span></div>
+  </div>
+  <nav class="toc" aria-label="目录">
+    <a href="#how">怎么读</a>
+    <a href="#order">完整阅读顺序</a>
+    <a href="#flow">主流程图</a>
+    <a href="#scenarios">按场景选路线</a>
+    <a href="#example">完整实战</a>
+    <a href="#inventory">全功能索引</a>
+    <a href="#boundary">阶段边界</a>
+    <a href="#traps">常见坑</a>
+  </nav>
+  <p class="panel-hint">点击任意文档名，右侧浮窗载入中文翻译。拖动浮窗左边缘可以调整宽度，<kbd>Esc</kbd> 关闭。</p>
+  <p class="mobile-hint">手机上点文档名会全屏打开中文翻译；表格可以左右滑动查看完整内容。</p>
+</header>
+
+<section id="how">
+  <h2>怎么读：三条规则</h2>
+  <p class="section-lede">这套仓库的文档不是 API 手册，而是“什么时候该用哪个技能”的分布式路由。读法比读量重要。</p>
+  <div class="grid">
+    <div class="card">
+      <h3>docs 是导览，SKILL.md 是事实</h3>
+      <p>docs 页面负责让你理解定位、边界和常见问题。真正执行时，技能行为以对应目录里的 <code>SKILL.md</code> 为准。两者冲突时，<code>SKILL.md</code> 赢。</p>
+    </div>
+    <div class="card">
+      <h3>先看调用方式</h3>
+      <p><b>user-invoked</b> 只能由你手打，例如 <code>/implement</code>。模型看不到它，也不会自动触发。<b>model-invoked</b> 可以由你手打，也可以由模型在任务匹配时自动触发。</p>
+    </div>
+    <div class="card">
+      <h3>按 flow 读，不按字母读</h3>
+      <p>主链是 idea → ship。两个 on-ramp 分别接“别人交来的工作”和“已经坏掉的东西”。其余是 standalone 或词汇层。先建立这个骨架，再填细节。</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p><b>每篇 docs 页的固定读法：</b>What it does 看定义约束；When to reach for it 看触发边界；Prerequisites 看要准备什么；中间章节看它独有的概念；Common questions 看真实失败模式；It's working if 看验收信号；Where it fits 看它在图上的位置。</p>
+    <p><b>最短可用路线：</b>1 → 3 → 4 → 6 → 9 → 12 → 13 → 16 → 14 → 15 → 19。大约 11 篇，足以跑通“有仓库、单 session 或多 session”的日常功能开发。</p>
+  </div>
+</section>
+
+<section id="order">
+  <h2>完整阅读顺序</h2>
+  <p class="section-lede">按依赖顺序排列，不是按目录顺序。每读完一段，回到 <code>ask-matt</code> 的五个路线看一遍，你会知道刚读的节点挂在哪。</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>文档</th><th>读它抓住什么</th><th>标记</th></tr>
+      </thead>
+      <tbody>
+        <tr class="stage"><td colspan="4">A. 导读与地图</td></tr>
+        <tr><td class="num">1</td><td><a href="README.md">README.md</a></td><td>世界观、安装、推广技能总览。先读 “Why These Skills Exist” 和 “Reference”。</td><td><span class="tag core">必读</span></td></tr>
+        <tr><td class="num">2</td><td><a href="GLOSSARY.md">GLOSSARY.md</a></td><td>Issue、Decision ticket、Triage role 的精确定义。后面所有技能都用这套词。</td><td><span class="tag core">必读</span></td></tr>
+        <tr><td class="num">3</td><td><a href=".agents/invocation.md">.agents/invocation.md</a></td><td>user-invoked 与 model-invoked 的分工。解释为什么有的技能“明明装了却显示不存在”。</td><td><span class="tag core">必读</span></td></tr>
+        <tr><td class="num">4</td><td><a href="docs/engineering/ask-matt.md">docs/engineering/ask-matt.md</a></td><td>五类路线：主链、on-ramp、codebase health、standalone、词汇层。全仓最重要的单页。</td><td><span class="tag core">必读</span></td></tr>
+        <tr><td class="num">5</td><td><a href="skills/engineering/ask-matt/PHASE-BOUNDARIES.md">ask-matt/PHASE-BOUNDARIES.md</a></td><td>Continue、clear、handoff、subagent、compact 的固定顺序。上下文管理的决策树。</td><td><span class="tag core">必读</span></td></tr>
+
+        <tr class="stage"><td colspan="4">B. 一次性配置</td></tr>
+        <tr><td class="num">6</td><td><a href="docs/engineering/setup-matt-pocock-skills.md">setup-matt-pocock-skills</a></td><td>每仓一次：issue tracker、triage labels、domain docs 布局。它只写配置，不创建标签。</td><td><span class="tag core">必读</span></td></tr>
+
+        <tr class="stage"><td colspan="4">C. 访谈、领域语言与模块词汇</td></tr>
+        <tr><td class="num">7</td><td><a href="docs/productivity/grilling.md">grilling</a></td><td>访谈原语：设计树、frontier、轮次、事实与决策分离。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">8</td><td><a href="docs/productivity/grill-me.md">grill-me</a></td><td>没有仓库时的入口。无状态，不写文件。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">9</td><td><a href="docs/engineering/grill-with-docs.md">grill-with-docs</a></td><td>有仓库时的入口。同一套访谈，边问边写 <code>GLOSSARY.md</code> 和 ADR。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">10</td><td><a href="docs/engineering/domain-modeling.md">domain-modeling</a></td><td>术语与 ADR 的写入标准。重点看 glossary 与 ADR 的两套门槛。</td><td><span class="tag ref">词汇层</span></td></tr>
+        <tr><td class="num">11</td><td><a href="docs/engineering/codebase-design.md">codebase-design</a></td><td>module、interface、depth、seam、adapter、leverage、locality。设计模块时的共同语言。</td><td><span class="tag ref">词汇层</span></td></tr>
+
+        <tr class="stage"><td colspan="4">D. 主链：spec 到 ship</td></tr>
+        <tr><td class="num">12</td><td><a href="docs/engineering/to-spec.md">to-spec</a></td><td>只记录已经决定的事，不重新访谈。先定 seam，再写 prose。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">13</td><td><a href="docs/engineering/to-tickets.md">to-tickets</a></td><td>tracer bullet、blocking edges、expand-contract。票是垂直切片，不是层。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">14</td><td><a href="docs/engineering/tdd.md">tdd</a></td><td>red-green、垂直切片、预同意 seam、三个反模式。没有 refactor 阶段。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">15</td><td><a href="docs/engineering/code-review.md">code-review</a></td><td>Standards 与 Spec 两轴，各自独立 subagent。固定点、committed diff、引用证据。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">16</td><td><a href="docs/engineering/implement.md">implement</a></td><td>单票构建的五步：读票、tdd、typecheck、全量测试、review 后 commit。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">17</td><td><a href="docs/engineering/implement-spec.md">implement-spec</a></td><td>把票当 task graph，在 worktree 里并行跑 ready frontier，再合到 integration branch。</td><td><span class="tag core">进阶</span></td></tr>
+        <tr><td class="num">18</td><td><a href="docs/engineering/pr.md">pr</a></td><td>PR body 三段：Summary 图、Evidence 前后对比、Merge Danger 门与爆炸半径。</td><td><span class="tag core">核心</span></td></tr>
+        <tr><td class="num">19</td><td><a href="docs/engineering/retro.md">retro</a></td><td>改环境不改代码。机械错误变检查，判断类错误变 reviewer 标准。</td><td><span class="tag core">核心</span></td></tr>
+
+        <tr class="stage"><td colspan="4">E. 分支、入口与维护</td></tr>
+        <tr><td class="num">20</td><td><a href="docs/engineering/prototype.md">prototype</a></td><td>一次性代码回答一个设计问题。逻辑分支是单 HTML，UI 分支是多变体。</td><td><span class="tag standalone">分支</span></td></tr>
+        <tr><td class="num">21</td><td><a href="docs/engineering/wayfinder.md">wayfinder</a></td><td>多 session 的决策地图。产出 decision tickets，不产出交付物。地图清空后交给 to-spec。</td><td><span class="tag entry">on-ramp</span></td></tr>
+        <tr><td class="num">22</td><td><a href="docs/engineering/triage.md">triage</a></td><td>只处理别人交来的 issue。五状态机、verify before brief、.out-of-scope 去重。</td><td><span class="tag entry">on-ramp</span></td></tr>
+        <tr><td class="num">23</td><td><a href="docs/agents/triage-labels.md">docs/agents/triage-labels.md</a></td><td>本仓的标签映射示例。读 triage 时一起看，知道规范角色与实际字符串的关系。</td><td><span class="tag entry">on-ramp</span></td></tr>
+        <tr><td class="num">24</td><td><a href="docs/engineering/diagnosing-bugs.md">diagnosing-bugs</a></td><td>六阶段诊断。Phase 1 的 tight loop 是硬门槛，没有红命令就不准提假设。</td><td><span class="tag entry">on-ramp</span></td></tr>
+        <tr><td class="num">25</td><td><a href="docs/engineering/improve-codebase-architecture.md">improve-codebase-architecture</a></td><td>定期巡检深模块机会。只产出 HTML 报告和候选，不改代码。</td><td><span class="tag standalone">维护</span></td></tr>
+        <tr><td class="num">26</td><td><a href="docs/engineering/research.md">research</a></td><td>后台 agent 查一手来源，留下带引用的 Markdown。不是决策，是事实。</td><td><span class="tag standalone">独立</span></td></tr>
+
+        <tr class="stage"><td colspan="4">F. 独立 workflow 工具与写作</td></tr>
+        <tr><td class="num">27</td><td><a href="docs/productivity/handoff.md">handoff</a></td><td>只在跨 harness、跨目录、交给同事、或分叉 side task 时用。它买的是可携带性，不是压缩。</td><td><span class="tag standalone">独立</span></td></tr>
+        <tr><td class="num">28</td><td><a href="docs/productivity/to-questionnaire.md">to-questionnaire</a></td><td>访谈“发送”而不是主题：给谁、要拿回什么。输出给一个人填的 Markdown。</td><td><span class="tag standalone">独立</span></td></tr>
+        <tr><td class="num">29</td><td><a href="docs/productivity/wait-what.md">wait-what</a></td><td>消息没听懂时的修复。用 “wait” 命名听者状态，而不是要求输出简洁。</td><td><span class="tag standalone">独立</span></td></tr>
+        <tr><td class="num">30</td><td><a href="docs/productivity/teach.md">teach</a></td><td>把当前目录变成多 session 教学工作区：MISSION、RESOURCES、lessons、records。</td><td><span class="tag standalone">独立</span></td></tr>
+        <tr><td class="num">31</td><td><a href="docs/productivity/writing-for-agents.md">writing-for-agents</a></td><td>给 agent 读的文档怎么写。context load、cognitive load、leading words、no-op 删除。</td><td><span class="tag ref">参考</span></td></tr>
+        <tr><td class="num">32</td><td><a href="docs/engineering/wizard.md">wizard</a></td><td>生成交互式 bash 向导，带你走只有人能走的步骤。agent 写，不跑。</td><td><span class="tag standalone">独立</span></td></tr>
+
+        <tr class="stage"><td colspan="4">G. 归档与非推广桶</td></tr>
+        <tr><td class="num">33</td><td><a href="docs/engineering/resolving-merge-conflicts.md">resolving-merge-conflicts</a></td><td>已归档。v1.3.0 移除，没有替代技能。读它是为了理解历史，不是使用。</td><td><span class="tag archived">归档</span></td></tr>
+        <tr><td class="num">34</td><td><a href="skills/in-progress/README.md">skills/in-progress/README.md</a></td><td>6 个 beta 技能：loop-me、writing-fragments、writing-shape、writing-beats、claude-handoff、setup-ts-deep-modules。</td><td><span class="tag beta">可选</span></td></tr>
+        <tr><td class="num">35</td><td><a href="skills/misc/README.md">skills/misc/README.md</a></td><td>4 个低频工具：git guardrails、shoehorn 迁移、练习脚手架、pre-commit 配置。</td><td><span class="tag misc">可选</span></td></tr>
+
+        <tr class="stage"><td colspan="4">H. 维护这个仓库本身时再读</td></tr>
+        <tr><td class="num">36</td><td><a href=".agents/writing-docs.md">.agents/writing-docs.md</a></td><td>docs 页面的模板、四段固定结构、绝对链接和归档规则。</td><td><span class="tag ref">维护</span></td></tr>
+        <tr><td class="num">37</td><td><a href="AGENTS.md">AGENTS.md</a></td><td>bucket 规则、promoted 与 plugin/README 的同步、docs 树镜像、无 em-dash 约束。</td><td><span class="tag ref">维护</span></td></tr>
+        <tr><td class="num">38</td><td><a href="SCOPE.md">SCOPE.md</a></td><td>triage 判断 issue 是否属于本仓库范围时的依据。</td><td><span class="tag ref">维护</span></td></tr>
+        <tr><td class="num">39</td><td><a href="CHANGELOG.md">CHANGELOG.md</a></td><td>重命名与移除历史。排查“某个技能去哪了”时先查这里。内容过长，保留英文原文。</td><td><span class="tag">英文</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="flow">
+  <h2>主流程图</h2>
+  <p class="section-lede">实线是主链和直接分支，虚线是反馈或可选回路。每个框里的文字是“下一步动作”，不是技能简介。</p>
+  <div class="flow-shell">
+    <svg viewBox="0 0 1000 880" role="img" aria-labelledby="flow-title flow-desc">
+      <title id="flow-title">Skills 主流程图</title>
+      <desc id="flow-desc">从 setup 开始，经过 grill、session 数判断、spec 与 tickets、implement 或 implement-spec、code-review、pr、retro，并有 improve-codebase-architecture 的反馈回路。</desc>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <!-- setup -->
+      <rect class="node setup" x="350" y="20" width="300" height="52" rx="9"/>
+      <text class="node-text" x="500" y="40">setup-matt-pocock-skills</text>
+      <text class="node-sub" x="500" y="58">每仓一次：tracker、labels、domain docs</text>
+
+      <path class="edge" d="M 500 72 L 500 104"/>
+
+      <!-- grill -->
+      <rect class="node primary" x="350" y="104" width="300" height="64" rx="9"/>
+      <text class="node-text" x="500" y="126">grill-with-docs / grill-me</text>
+      <text class="node-sub" x="500" y="146">访谈：把想法问到能承诺</text>
+
+      <path class="edge" d="M 500 168 L 500 190"/>
+
+      <!-- decision -->
+      <polygon class="diamond" points="500,190 610,238 500,286 390,238"/>
+      <text class="node-text" x="500" y="232">跨多个 session？</text>
+      <text class="node-sub" x="500" y="250">单 session 还是多 session</text>
+
+      <!-- no branch -->
+      <path class="edge" d="M 390 238 L 220 238 L 220 320"/>
+      <text class="edge-label" x="286" y="228">否</text>
+      <rect class="node primary" x="70" y="320" width="300" height="76" rx="9"/>
+      <text class="node-text" x="220" y="344">implement</text>
+      <text class="node-sub" x="220" y="364">同一上下文直接建</text>
+      <text class="node-sub" x="220" y="380">内部驱动 tdd 与 code-review</text>
+
+      <!-- yes branch -->
+      <path class="edge" d="M 610 238 L 800 238 L 800 320"/>
+      <text class="edge-label" x="710" y="228">是</text>
+      <rect class="node primary" x="670" y="320" width="260" height="54" rx="9"/>
+      <text class="node-text" x="800" y="341">to-spec</text>
+      <text class="node-sub" x="800" y="359">把已决定的对话固化成 spec</text>
+
+      <path class="edge" d="M 800 374 L 800 398"/>
+      <rect class="node primary" x="670" y="398" width="260" height="64" rx="9"/>
+      <text class="node-text" x="800" y="420">to-tickets</text>
+      <text class="node-sub" x="800" y="438">切成 tracer-bullet 票，标阻塞边</text>
+
+      <!-- split to implementations -->
+      <path class="edge" d="M 800 462 L 800 486"/>
+      <path class="edge" d="M 695 486 L 905 486"/>
+      <path class="edge" d="M 695 486 L 695 510"/>
+      <path class="edge" d="M 905 486 L 905 510"/>
+      <text class="edge-label" x="642" y="480">逐票</text>
+      <text class="edge-label" x="918" y="480">并行</text>
+
+      <rect class="node primary" x="600" y="510" width="190" height="90" rx="9"/>
+      <text class="node-text" x="695" y="534">implement</text>
+      <text class="node-sub" x="695" y="554">一票一 session</text>
+      <text class="node-sub" x="695" y="570">每票清上下文</text>
+      <text class="node-sub" x="695" y="586">每票 review + commit</text>
+
+      <rect class="node primary" x="810" y="510" width="190" height="90" rx="9"/>
+      <text class="node-text" x="905" y="534">implement-spec</text>
+      <text class="node-sub" x="905" y="554">task graph 并行</text>
+      <text class="node-sub" x="905" y="570">worktree + 集成分支</text>
+      <text class="node-sub" x="905" y="586">最后统一 review</text>
+
+      <!-- merge to code review -->
+      <path class="edge" d="M 220 396 L 220 672 L 360 672"/>
+      <path class="edge" d="M 695 600 L 695 620"/>
+      <path class="edge" d="M 905 600 L 905 620"/>
+      <path class="edge" d="M 520 620 L 905 620"/>
+      <path class="edge" d="M 520 620 L 520 640"/>
+
+      <rect class="node primary" x="360" y="640" width="300" height="64" rx="9"/>
+      <text class="node-text" x="510" y="663">code-review</text>
+      <text class="node-sub" x="510" y="682">两轴审查；implement 内已跑，可再独立复跑</text>
+
+      <path class="edge" d="M 510 704 L 510 724"/>
+      <rect class="node primary" x="360" y="724" width="300" height="54" rx="9"/>
+      <text class="node-text" x="510" y="745">pr</text>
+      <text class="node-sub" x="510" y="762">Summary 图 + Evidence + Merge Danger</text>
+
+      <path class="edge" d="M 510 778 L 510 802"/>
+      <rect class="node primary" x="360" y="802" width="300" height="54" rx="9"/>
+      <text class="node-text" x="510" y="823">retro</text>
+      <text class="node-sub" x="510" y="840">改环境：检查、标准、指针</text>
+
+      <!-- feedback loop -->
+      <rect class="node optional" x="40" y="802" width="250" height="64" rx="9"/>
+      <text class="node-text" x="165" y="824">improve-codebase-architecture</text>
+      <text class="node-sub" x="165" y="843">定期巡检，产出候选</text>
+      <path class="edge dashed" d="M 360 829 L 290 829"/>
+      <text class="edge-label" x="300" y="821">反馈</text>
+      <path class="edge dashed" d="M 40 834 L 20 834 L 20 140 L 350 140"/>
+      <text class="edge-label" x="28" y="500" transform="rotate(-90 28 500)">候选回到主链</text>
+    </svg>
+    <div class="legend">
+      <span class="accent">主链</span>
+      <span>直接分支</span>
+      <span class="dash">反馈或可选回路</span>
+    </div>
+  </div>
+  <div class="mobile-flow" aria-label="移动端主流程">
+    <div class="mf-step"><b>1</b><span><strong>setup-matt-pocock-skills</strong>：每仓一次，配置 tracker、标签和 domain docs。</span></div>
+    <div class="mf-step"><b>2</b><span><strong>grill-with-docs / grill-me</strong>：把想法问到能承诺。有仓库用前者，没有仓库用后者。</span></div>
+    <div class="mf-step"><b>3</b><span><strong>分支</strong>：谈不清就 prototype；缺外部事实就 research；答案在别人脑子里就 to-questionnaire。</span></div>
+    <div class="mf-step"><b>4</b><span><strong>单 session</strong>：直接 implement，内部驱动 tdd 和 code-review。</span></div>
+    <div class="mf-step"><b>5</b><span><strong>多 session</strong>：to-spec 固化决策，to-tickets 切票，然后 implement 逐票或 implement-spec 并行。</span></div>
+    <div class="mf-step"><b>6</b><span><strong>入口</strong>：外部 issue 走 triage；硬 bug 走 diagnosing-bugs；超大雾状工作走 wayfinder。</span></div>
+    <div class="mf-step"><b>7</b><span><strong>收尾</strong>：pr 写 PR body；retro 改环境；improve-codebase-architecture 把候选送回主链。</span></div>
+  </div>
+</section>
+
+<section id="scenarios">
+  <h2>按场景选路线</h2>
+  <p class="section-lede">主图回答“正常怎么走”。这张表回答“我现在这个情况从哪进”。</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>你的情况</th><th>路线</th><th>关键判断</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>新功能，一个 session 能定</td><td><code>grill-with-docs → implement → pr → retro</code></td><td>能直接进 implement，省掉 spec 和 tickets。</td></tr>
+        <tr><td>新功能，跨多个 session</td><td><code>grill-with-docs → to-spec → to-tickets → implement 逐票 / implement-spec → pr → retro</code></td><td>spec 和 tickets 只在多 session 时值得写。</td></tr>
+        <tr><td>谈不清的设计问题</td><td><code>grill-with-docs → handoff → prototype → handoff 回来 → to-spec</code></td><td>逻辑用单 HTML，UI 用多变体。答案回主链，原型留分支。</td></tr>
+        <tr><td>别人交来的 issue 或 PR</td><td><code>triage → implement</code></td><td>只处理你没创建的。to-tickets 产出的票已经 ready-for-agent，不要 triage。</td></tr>
+        <tr><td>硬 bug、间歇性失败、性能回归</td><td><code>triage（原始报告）→ diagnosing-bugs → retro</code></td><td>没有 tight loop 不要进入假设阶段。修完后问“什么能预防它”。</td></tr>
+        <tr><td>巨大、雾状、一次 session 装不下</td><td><code>wayfinder → to-spec → to-tickets → implement</code></td><td>地图清空后不要直接 implement，先 to-spec 收敛决策。</td></tr>
+        <tr><td>代码结构在变差</td><td><code>improve-codebase-architecture → grill-with-docs / to-spec</code></td><td>它只巡检，不改代码。候选回到主链再实施。</td></tr>
+        <tr><td>缺外部事实</td><td><code>research → grill-with-docs / to-spec</code></td><td>research 产出事实与引用，不产出决策。文件要手动带进下一步。</td></tr>
+        <tr><td>答案在别人脑子里</td><td><code>to-questionnaire → 回到 grill-with-docs / to-spec</code></td><td>访谈的是“发送”：给谁、要拿回什么。一次只写给一个人。</td></tr>
+        <tr><td>要开账号、配密钥、走第三方面板</td><td><code>wizard</code></td><td>只有人能做到的步骤才用它。agent 能做的不要外包给人。</td></tr>
+        <tr><td>跨 harness、跨目录、交给同事、分叉 side task</td><td><code>handoff</code></td><td>没有东西要“移动”时，用 compact，不要用 handoff。</td></tr>
+        <tr><td>要写技能、AGENTS.md、spec、ticket 或给 agent 读的文档</td><td><code>writing-for-agents</code></td><td>删除 no-op，保留 leading words，把只在一个分支用到的内容放到指针后面。</td></tr>
+        <tr><td>非代码学习</td><td><code>teach</code></td><td>在自己的目录里建课程，不要塞进工作项目。</td></tr>
+        <tr><td>消息没听懂</td><td><code>wait-what</code></td><td>任何流程中都可插入。它修一条消息，不修整个流程。</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="inventory">
+  <h2>全功能索引</h2>
+  <p class="section-lede">27 个当前推广技能，加 1 个归档页和 10 个非推广技能。调用方式决定你能不能等模型自动触发。</p>
+
+  <h3>Engineering：主链、入口与维护</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>技能</th><th>调用</th><th>定位</th><th>输入 → 输出</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><a href="skills/engineering/setup-matt-pocock-skills/SKILL.md">setup-matt-pocock-skills</a></td><td><span class="tag">手打</span></td><td>一次性配置</td><td>仓库 → <code>docs/agents/issue-tracker.md</code>、<code>domain.md</code>、<code>triage-labels.md</code></td></tr>
+        <tr><td><a href="skills/engineering/ask-matt/SKILL.md">ask-matt</a></td><td><span class="tag">手打</span></td><td>路由器</td><td>情境描述 → 下一个该敲的命令，不执行</td></tr>
+        <tr><td><a href="skills/engineering/grill-with-docs/SKILL.md">grill-with-docs</a></td><td><span class="tag">手打</span></td><td>主链起点</td><td>模糊计划 → 共识 + <code>GLOSSARY.md</code> + ADR</td></tr>
+        <tr><td><a href="skills/engineering/to-spec/SKILL.md">to-spec</a></td><td><span class="tag">手打</span></td><td>主链</td><td>已决定的对话 → 一个 spec issue</td></tr>
+        <tr><td><a href="skills/engineering/to-tickets/SKILL.md">to-tickets</a></td><td><span class="tag">手打</span></td><td>主链</td><td>spec / 计划 → 带阻塞边的 tracer-bullet 票</td></tr>
+        <tr><td><a href="skills/engineering/implement/SKILL.md">implement</a></td><td><span class="tag">手打</span></td><td>主链，单票</td><td>ticket / spec → 当前分支的一次 commit</td></tr>
+        <tr><td><a href="skills/engineering/implement-spec/SKILL.md">implement-spec</a></td><td><span class="tag">手打</span></td><td>主链，整 spec</td><td>spec + tickets → integration branch，可能一个 draft PR</td></tr>
+        <tr><td><a href="skills/engineering/tdd/SKILL.md">tdd</a></td><td><span class="tag">模型/手打</span></td><td>构建纪律</td><td>一个具体行为 → 红测试 + 最小实现</td></tr>
+        <tr><td><a href="skills/engineering/code-review/SKILL.md">code-review</a></td><td><span class="tag">模型/手打</span></td><td>构建纪律</td><td>fixed point + diff → Standards / Spec 两轴报告</td></tr>
+        <tr><td><a href="skills/engineering/pr/SKILL.md">pr</a></td><td><span class="tag">模型/手打</span></td><td>收尾</td><td>已审 diff → PR body 格式</td></tr>
+        <tr><td><a href="skills/engineering/retro/SKILL.md">retro</a></td><td><span class="tag">手打</span></td><td>收尾，改环境</td><td>session 记录 → 检查、标准、指针、工具候选</td></tr>
+        <tr><td><a href="skills/engineering/triage/SKILL.md">triage</a></td><td><span class="tag">手打</span></td><td>on-ramp</td><td>外部 issue / PR → 状态角色 + agent brief</td></tr>
+        <tr><td><a href="skills/engineering/diagnosing-bugs/SKILL.md">diagnosing-bugs</a></td><td><span class="tag">模型/手打</span></td><td>on-ramp</td><td>已知症状 → tight loop、根因、回归测试</td></tr>
+        <tr><td><a href="skills/engineering/wayfinder/SKILL.md">wayfinder</a></td><td><span class="tag">手打</span></td><td>on-ramp</td><td>目的地 + 雾 → decision tickets + 地图</td></tr>
+        <tr><td><a href="skills/engineering/improve-codebase-architecture/SKILL.md">improve-codebase-architecture</a></td><td><span class="tag">手打</span></td><td>维护</td><td>代码库 → 临时 HTML 报告 + 候选</td></tr>
+        <tr><td><a href="skills/engineering/prototype/SKILL.md">prototype</a></td><td><span class="tag">模型/手打</span></td><td>standalone / 分支</td><td>一个设计问题 → 单 HTML 逻辑 demo 或 UI 变体</td></tr>
+        <tr><td><a href="skills/engineering/research/SKILL.md">research</a></td><td><span class="tag">模型/手打</span></td><td>standalone</td><td>外部事实问题 → 带引用的 Markdown 文件</td></tr>
+        <tr><td><a href="skills/engineering/domain-modeling/SKILL.md">domain-modeling</a></td><td><span class="tag">模型/手打</span></td><td>词汇层</td><td>术语冲突 → <code>GLOSSARY.md</code> / ADR</td></tr>
+        <tr><td><a href="skills/engineering/codebase-design/SKILL.md">codebase-design</a></td><td><span class="tag">模型/手打</span></td><td>词汇层</td><td>模块形状问题 → 共同设计词汇，不启动流程</td></tr>
+        <tr><td><a href="skills/engineering/wizard/SKILL.md">wizard</a></td><td><span class="tag">模型/手打</span></td><td>standalone</td><td>人工步骤 → 交互式 bash 向导</td></tr>
+        <tr><td><a href="docs/engineering/resolving-merge-conflicts.md">resolving-merge-conflicts</a></td><td><span class="tag archived">已移除</span></td><td>历史归档</td><td>v1.3.0 移除，没有替代技能；只保留文档页</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Productivity：访谈与通用 workflow</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>技能</th><th>调用</th><th>定位</th><th>输入 → 输出</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><a href="skills/productivity/grill-me/SKILL.md">grill-me</a></td><td><span class="tag">手打</span></td><td>无仓库访谈</td><td>模糊想法 → 能承诺的计划，不写文件</td></tr>
+        <tr><td><a href="skills/productivity/grilling/SKILL.md">grilling</a></td><td><span class="tag">模型/手打</span></td><td>访谈原语</td><td>设计树 → 按 frontier 分轮的问题</td></tr>
+        <tr><td><a href="skills/productivity/handoff/SKILL.md">handoff</a></td><td><span class="tag">手打</span></td><td>standalone</td><td>当前对话 → 临时目录里的 handoff markdown</td></tr>
+        <tr><td><a href="skills/productivity/to-questionnaire/SKILL.md">to-questionnaire</a></td><td><span class="tag">手打</span></td><td>standalone</td><td>给谁 + 要什么 → <code>to-questionnaire-&lt;slug&gt;.md</code></td></tr>
+        <tr><td><a href="skills/productivity/wait-what/SKILL.md">wait-what</a></td><td><span class="tag">手打</span></td><td>standalone</td><td>没听懂的消息 → 更短、更清楚的 re-pitch</td></tr>
+        <tr><td><a href="skills/productivity/teach/SKILL.md">teach</a></td><td><span class="tag">手打</span></td><td>standalone</td><td>一个主题 → 教学工作区：mission、resources、lessons、records</td></tr>
+        <tr><td><a href="skills/productivity/writing-for-agents/SKILL.md">writing-for-agents</a></td><td><span class="tag">模型/手打</span></td><td>参考</td><td>给 agent 读的草稿 → 更少 no-op、更明确的文档</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>非推广桶：beta 与低频工具</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>技能</th><th>桶</th><th>调用</th><th>用途</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><a href="skills/in-progress/loop-me/SKILL.md">loop-me</a></td><td>in-progress</td><td><span class="tag">手打</span></td><td>用 grilling 反复打磨可实现的 workflow spec，写在 <code>workflows/*.md</code>。</td></tr>
+        <tr><td><a href="skills/in-progress/writing-fragments/SKILL.md">writing-fragments</a></td><td>in-progress</td><td><span class="tag">手打</span></td><td>explore：把写作素材以片段形式挖出来，不设结构。</td></tr>
+        <tr><td><a href="skills/in-progress/writing-shape/SKILL.md">writing-shape</a></td><td>in-progress</td><td><span class="tag">手打</span></td><td>exploit：把素材逐段塑造成文章，每段讨论格式。</td></tr>
+        <tr><td><a href="skills/in-progress/writing-beats/SKILL.md">writing-beats</a></td><td>in-progress</td><td><span class="tag">手打</span></td><td>exploit：以 beat 为单位推进文章，每次只写一个 beat。</td></tr>
+        <tr><td><a href="skills/in-progress/claude-handoff/SKILL.md">claude-handoff</a></td><td>in-progress</td><td><span class="tag">手打</span></td><td>生成 handoff 后立刻启动 <code>claude --bg</code> 后台 agent 接手。</td></tr>
+        <tr><td><a href="skills/in-progress/setup-ts-deep-modules/SKILL.md">setup-ts-deep-modules</a></td><td>in-progress</td><td><span class="tag">手打</span></td><td>用 dependency-cruiser 强制 TypeScript 包只通过入口文件暴露。</td></tr>
+        <tr><td><a href="skills/misc/git-guardrails-claude-code/SKILL.md">git-guardrails-claude-code</a></td><td>misc</td><td><span class="tag">模型</span></td><td>用 Claude Code hook 拦截 <code>git push</code>、<code>reset --hard</code> 等危险命令。</td></tr>
+        <tr><td><a href="skills/misc/migrate-to-shoehorn/SKILL.md">migrate-to-shoehorn</a></td><td>misc</td><td><span class="tag">模型</span></td><td>测试里的 <code>as</code> 断言迁移到 <code>@total-typescript/shoehorn</code>。</td></tr>
+        <tr><td><a href="skills/misc/scaffold-exercises/SKILL.md">scaffold-exercises</a></td><td>misc</td><td><span class="tag">模型</span></td><td>生成课程练习目录、problem/solution/explainer 和 readme。</td></tr>
+        <tr><td><a href="skills/misc/setup-pre-commit/SKILL.md">setup-pre-commit</a></td><td>misc</td><td><span class="tag">模型</span></td><td>Husky + lint-staged + Prettier + typecheck + test 的 pre-commit。</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="boundary">
+  <h2>阶段边界：五个选项的顺序</h2>
+  <p class="section-lede">阶段是 session 里的一块工作：访谈、实现、QA。边界只在两个阶段之间出现。按顺序问，第一个“是”就停下。</p>
+  <ol class="steps">
+    <li><b>能继续吗？</b> 下一阶段需要这一阶段的原始上下文，或者 smart zone 还够。能就 <b>Continue</b>。它不丢信息，所以先排除它。</li>
+    <li><b>后面的工作和现在完全无关吗？</b> 是就 <b>/clear</b>。最便宜，但 wrong 了不可逆。</li>
+    <li><b>有东西需要移动吗？</b> 换 harness、换目录、交给同事、或中途分叉 side task，才用 <b>/handoff</b>。它买的是可携带性。</li>
+    <li><b>能 AFK 完成吗？</b> 任务边界足够紧，可以交给 <b>subagent</b>，当前 session 不动。</li>
+    <li><b>以上都不是，用 /compact。</b> 它是默认，不是第一选择。给它一句“接下来要做什么”，让摘要保留下一阶段需要的东西。</li>
+  </ol>
+  <div class="callout warn">
+    <p><b>为什么 compact 在最后：</b>Continue 保留全部信息，clear 最便宜，handoff 最可携带，subagent 最隔离。compact 是“相关上下文、同 harness、同目录、还要在场”时的兜底。先选 compact 的典型后果是：新 session 对某个被摘要压平的决策过度自信。</p>
+  </div>
+</section>
+
+<section id="traps">
+  <h2>常见坑</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>setup 不创建标签</h3>
+      <p>它只写映射文件。GitHub 上要自己 <code>gh label create</code> 五个状态和两个分类标签，否则 <code>ready-for-agent</code> 会报 label 不存在。</p>
+    </div>
+    <div class="card">
+      <h3>不要把 to-tickets 的票再 triage</h3>
+      <p>tickets 发布时已经是 <code>ready-for-agent</code>。triage 只处理外部进来的原始报告，重复 triage 会浪费 brief 工作。</p>
+    </div>
+    <div class="card">
+      <h3>implement 不关票，也不处理 review 发现</h3>
+      <p>它结束在 commit。票的状态、acceptance criteria、review 修复都要你自己收尾。票不关，frontier 就不会前进。</p>
+    </div>
+    <div class="card">
+      <h3>code-review 看不到未提交改动</h3>
+      <p>它比较 <code>fixed-point...HEAD</code>。implement 在 commit 前调用时可能没有可审的 diff。先 commit，再 review。</p>
+    </div>
+    <div class="card">
+      <h3>同一 session 里 review 自己有偏差</h3>
+      <p>作者 session 带着所有假设。想要独立审查，就在干净 session 里对固定点跑 <code>/code-review</code>。</p>
+    </div>
+    <div class="card">
+      <h3>implement-spec 需要并行 subagent 和 worktree</h3>
+      <p>不支持 worktree 的 harness 上，它只是更慢的 implement。票没有阻塞边时，整张图会同时开跑。</p>
+    </div>
+    <div class="card">
+      <h3>user-invoked 技能可能“显示不存在”</h3>
+      <p>harness 把 <code>disable-model-invocation</code> 的技能排除在模型可见列表外。模型说没装时，直接手打命令，或查 <code>.claude-plugin/plugin.json</code>。</p>
+    </div>
+    <div class="card">
+      <h3>ask-matt 的摘要是二手信息</h3>
+      <p>它按自己的摘要回答，可能滞后于 SKILL.md。要按它的建议行动前，先让agent打开对应 <code>SKILL.md</code>。</p>
+    </div>
+    <div class="card">
+      <h3>归档页不是当前功能</h3>
+      <p><code>resolving-merge-conflicts</code> 在 v1.3.0 移除，没有替代技能。冲突交给普通 agent 工作流。</p>
+    </div>
+  </div>
+</section>
+
+<section id="example">
+  <h2>完整实战：Course Video Manager</h2>
+  <p class="section-lede">同一个项目从仓库配置跑到上线，覆盖主链、两个 on-ramp、维护回路和独立工具。项目是虚构的，但命令、产物和判断都是真实用法。你可以把 <code>course-video-manager</code> 换成自己的项目。</p>
+
+  <div class="callout">
+    <p><b>项目设定：</b>一个 Next.js + TypeScript + Postgres 的课程视频管理器。已有模型是 <code>Course</code>、<code>Section</code>、<code>Lesson</code>。当一节 lesson 的视频处理完成后，它会被 <b>materialize</b> 成可播放的版本。</p>
+    <p>这个项目同时有四种工作：小功能“lesson 版本历史”、大计划“团队工作区与审批”、线上 bug“并发 materialize 返回 500”、维护问题“materialize 逻辑散落在多个 route”。四种工作刚好走完所有主流程和分支。</p>
+  </div>
+
+  <div class="timeline">
+    <details class="act" open>
+      <summary><span class="act-num">00</span><span>先定位：我现在该走哪条 flow？</span></summary>
+      <div class="act-body">
+        <p>动手前先跑一次路由器，不执行任何工作，只确认下一步该敲什么。</p>
+        <pre><code>/ask-matt
+
+我的项目是 course-video-manager。
+现在有四件事：
+1. 给 lesson 加版本历史，应该一个 session 能做完。
+2. 做团队工作区和审批，很大，路线还不清楚。
+3. 线上偶发 500，两个人同时 materialize 时出现。
+4. materialize 逻辑散在多个 route 里，想找机会重构。</code></pre>
+        <p>路由器会把你分到：单 session 主链、wayfinder、diagnosing-bugs、improve-codebase-architecture。它只给下一步，不替你执行。</p>
+      </div>
+    </details>
+
+    <details class="act" open>
+      <summary><span class="act-num">01</span><span>配置仓库：setup-matt-pocock-skills</span></summary>
+      <div class="act-body">
+        <p>在项目根目录运行一次。它只配置，不创建 GitHub 标签。</p>
+        <pre><code>cd course-video-manager
+/setup-matt-pocock-skills</code></pre>
+        <p>三个回答：</p>
+        <ul>
+          <li>Issue tracker：GitHub Issues，因为仓库已经在 GitHub 上。</li>
+          <li>Triage labels：保留五个规范名，<code>needs-triage</code>、<code>needs-info</code>、<code>ready-for-agent</code>、<code>ready-for-human</code>、<code>wontfix</code>。</li>
+          <li>Domain docs：单 context，根目录一个 <code>GLOSSARY.md</code>，ADR 放 <code>docs/adr/</code>。</li>
+        </ul>
+        <p>产物：</p>
+        <pre><code>docs/agents/issue-tracker.md
+docs/agents/domain.md
+docs/agents/triage-labels.md
+CLAUDE.md 里的 ## Agent skills 区块</code></pre>
+        <p>然后手动创建标签，否则 triage 和 to-tickets 会报 label 不存在：</p>
+        <pre><code>gh label create needs-triage
+gh label create needs-info
+gh label create ready-for-agent
+gh label create ready-for-human
+gh label create wontfix
+gh label create bug
+gh label create enhancement</code></pre>
+      </div>
+    </details>
+
+    <details class="act" open>
+      <summary><span class="act-num">02</span><span>对齐小功能：grill-with-docs + domain-modeling</span></summary>
+      <div class="act-body">
+        <p>先做“lesson 版本历史”。这是一个 session 能定的功能，所以从有状态的访谈入口开始。</p>
+        <pre><code>/grill-with-docs
+
+我想给 lesson 加版本历史。
+作者发布后还能看到每次修改，
+并且可以恢复旧版本。</code></pre>
+        <p>访谈会把含糊的词钉死。示例问题：</p>
+        <ul>
+          <li>“版本”是整节 lesson 的快照，还是只记录标题和脚本？</li>
+          <li>恢复旧版本时，是覆盖当前内容，还是创建一个新版本？</li>
+          <li>评论跟 lesson 走，还是跟版本走？</li>
+          <li>学生能看到历史吗，还是只有作者和管理员？</li>
+        </ul>
+        <p>达成一致后，<code>GLOSSARY.md</code> 立刻长出条目，而不是最后批量写入：</p>
+        <pre><code>## Lesson
+一门课程里的最小教学单元。包含标题、脚本、视频资产和发布状态。
+_Avoid_: video, chapter
+
+## Version
+Lesson 在某一时刻的不可变快照。恢复旧版本会创建一个新 Version，不修改历史。
+_Avoid_: revision, draft
+
+## Materialization
+把上传的视频和脚本变成可播放 Lesson 的过程。
+_Avoid_: processing, rendering</code></pre>
+        <p>只有一个决定同时满足“难以逆转、脱离上下文会意外、真实权衡”，才写成 ADR：</p>
+        <pre><code>docs/adr/0007-immutable-lesson-versions.md
+
+Decision: Version 是不可变行。恢复操作复制旧快照为新 Version。
+Reason: 历史必须可审计，回滚不能删除证据。</code></pre>
+        <p>如果不在仓库里，同样的访谈用 <code>/grill-me</code>，但它不写 <code>GLOSSARY.md</code> 和 ADR。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">03</span><span>谈不清的 UI：handoff 出去，prototype 回答</span></summary>
+      <div class="act-body">
+        <p>访谈卡在一个问题上：“版本历史应该是右侧抽屉，还是独立页面？” 这属于谈不清、需要看到才能回答的问题。</p>
+        <pre><code>/handoff "prototype version history drawer vs page"
+
+# 新 session
+/prototype
+
+问题：版本历史在桌面端用右侧抽屉还是独立页面？
+约束：移动端必须能单手操作。</code></pre>
+        <p><code>prototype</code> 产出两个结构不同的 UI 变体，不是一个变体的三种颜色。你在浏览器里点完，答案是一句话：桌面抽屉、移动端全页。</p>
+        <ul>
+          <li>原型提交到 <code>prototype/version-history</code> 分支，不合并。</li>
+          <li>实现 issue 里放一个 context pointer 指向这个分支。</li>
+          <li>答案写回主线程，继续 spec 或 implement。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">04</span><span>缺外部事实：research 后台跑</span></summary>
+      <div class="act-body">
+        <p>实现前发现一个事实问题：能不能用 Vercel Blob 的条件写入来避免并发覆盖？不要靠猜。</p>
+        <pre><code>/research "Vercel Blob conditional writes and ETag support"</code></pre>
+        <p>它在后台读官方文档和源码，写一个带引用的文件，例如：</p>
+        <pre><code>docs/research/vercel-blob-conditional-writes.md</code></pre>
+        <p>结论是“用内容 hash 作为 key，不依赖条件写入”。这个文件不自动进入后续 session，需要你把它带进 grilling 或 spec。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">05</span><span>答案在别人脑子里：to-questionnaire</span></summary>
+      <div class="act-body">
+        <p>还有一个问题不该问你：“助教能不能恢复版本，还是只有 owner 可以？” 答案在产品负责人脑子里。</p>
+        <pre><code>/to-questionnaire
+
+收件人：产品负责人
+我需要拿回：角色权限矩阵、审计要求、是否允许助教恢复</code></pre>
+        <p>它只访谈“发送”，不访谈主题。输出：</p>
+        <pre><code>to-questionnaire-version-permissions.md</code></pre>
+        <p>对方异步填完，答案回到 grilling 或 to-spec。不要为三个不同的人写一份问卷，一次只写给一个人。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">06</span><span>单 session 交付：implement + tdd + code-review + pr + retro</span></summary>
+      <div class="act-body">
+        <p>小功能已经对齐，直接构建。先创建一张票，或者用对话里的计划。</p>
+        <pre><code>/implement #212</code></pre>
+        <p>票的内容示例：</p>
+        <pre><code>#212 Lesson version history
+
+Demo: 打开一节 lesson，恢复 version 3，
+看到系统创建 version 4，version 1 到 3 仍在。
+
+Seams: LessonVersionService.list
+        LessonVersionService.restore
+
+Blocked by: none</code></pre>
+        <p>一次 run 的五步：</p>
+        <ol>
+          <li>读票，复述要构建什么，不重新设计。</li>
+          <li>在 <code>LessonVersionService</code> 的接缝上驱动 <code>/tdd</code>，一次一个红绿切片。</li>
+          <li>频繁 typecheck，单个测试文件随跑。</li>
+          <li>最后跑一次全量测试。</li>
+          <li>跑 <code>/code-review</code>，然后 commit 到当前分支。</li>
+        </ol>
+        <p>一个红绿切片长这样：</p>
+        <pre><code>红：restore creates a new version and leaves history unchanged
+绿：只写 restore 需要的最小代码
+红：list returns versions newest first
+绿：补上排序
+
+commit: feat: add immutable lesson versions</code></pre>
+        <p>commit 后在干净 session 里再跑一次独立 review，固定点用分支起点：</p>
+        <pre><code>/code-review main</code></pre>
+        <p>然后写 PR body：</p>
+        <pre><code>/pr
+
+## Summary
+Lesson detail 增加 history drawer，
+restore 创建新 Version，不修改旧行。
+
+## Evidence
+Before: GET /api/lessons/42/versions -> 404
+After:  GET /api/lessons/42/versions -> 200，3 条记录
+
+## Merge Danger
+Two-way door。爆炸半径：lesson detail API 和 history drawer。</code></pre>
+        <p>最后复盘：</p>
+        <pre><code>/retro</code></pre>
+        <p>只接受能指向具体失败时刻的候选。比如“每次新增写接口都加并发测试”变成 CI 检查，“不要直接写 versions 表”变成 reviewer 标准。不要把所有东西都塞进 <code>CLAUDE.md</code>。</p>
+        <p><b>注意：</b><code>implement</code> 不会关闭 #212，也不会处理 review 发现。票的状态和 acceptance criteria 要自己收尾。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">07</span><span>大计划：wayfinder 画决策地图</span></summary>
+      <div class="act-body">
+        <p>“团队工作区与审批”不是一个 session 能装下的，而且路线不清楚。不要直接 grill 到底，也不要直接开票。</p>
+        <pre><code>/wayfinder
+
+Destination:
+一个团队可以邀请成员、分配角色，
+并在发布前审批一个课程版本。</code></pre>
+        <p>wayfinder 在 tracker 上建一个 <code>wayfinder:map</code> issue，子 issue 是决策票，不是实现票。</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>决策票</th><th>类型</th><th>怎么解决</th></tr></thead>
+            <tbody>
+              <tr><td>角色模型：owner / admin / editor / reviewer 的边界</td><td>grilling</td><td>和产品负责人访谈，写进 GLOSSARY 和 ADR</td></tr>
+              <tr><td>审批队列长什么样</td><td>prototype</td><td>用单 HTML 或多个 UI 变体回答</td></tr>
+              <tr><td>Resend 的 organization invite API 怎么用</td><td>research</td><td>后台 agent 读官方文档，写引用文件</td></tr>
+              <tr><td>创建一个 staging 组织并灌入测试数据</td><td>task</td><td>agent 能做就做，不能做就给人精确 checklist</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>一次只解决一张决策票。地图清空后不要直接 implement，因为决策票不是交付物。</p>
+        <pre><code>/to-spec #300</code></pre>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">08</span><span>多 session 拆解：to-spec + to-tickets</span></summary>
+      <div class="act-body">
+        <p><code>to-spec</code> 把地图里的链接决策收敛成一个可构建的规格说明，不重新访谈。先定接缝，再写 prose。</p>
+        <pre><code>/to-spec #300
+/to-tickets #340</code></pre>
+        <p>票必须是 tracer bullet，每一张都能单独 demo，并且写清阻塞边：</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>票</th><th>Blocked by</th><th>完成后能 demo 什么</th></tr></thead>
+            <tbody>
+              <tr><td>#341 workspace schema</td><td>none</td><td>创建一个 workspace，数据库里能看到 owner 成员</td></tr>
+              <tr><td>#342 invite member</td><td>#341</td><td>邀请一个 editor，对方收到邮件并接受</td></tr>
+              <tr><td>#343 role policy</td><td>#341</td><td>reviewer 不能发布，editor 不能改角色</td></tr>
+              <tr><td>#344 approval queue</td><td>#342, #343</td><td>提交一个版本进入队列，reviewer 能看到</td></tr>
+              <tr><td>#345 publish guard</td><td>#344</td><td>未审批的版本无法发布</td></tr>
+              <tr><td>#346 e2e invite approve publish</td><td>#345</td><td>从邀请到审批到发布的一条完整路径</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>检查每张票：“完成后能 demo 什么？” 答不上来就是水平切片。票发布时已经是 <code>ready-for-agent</code>，不要再 triage。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">09</span><span>两种构建方式：implement 逐票 vs implement-spec 并行</span></summary>
+      <div class="act-body">
+        <p><b>方式 A：逐票，人在场。</b></p>
+        <pre><code>/clear
+/implement #341
+# commit 后手动关票
+/clear
+/implement #342</code></pre>
+        <p>每张票一个 fresh context，票之间不共享上下文。适合你想逐票阅读、随时调整方向。</p>
+        <p><b>方式 B：整 spec 并行。</b></p>
+        <pre><code>/clear
+/implement-spec #340</code></pre>
+        <p>编排 agent 把票当 task graph，在各自 worktree 里并行跑 ready frontier，合并到一个 integration branch，最后跑一次 <code>code-review</code>。需要 harness 支持后台 subagent 和 worktree，否则它只是更慢的 <code>implement</code>。</p>
+        <p>并行前检查冲突：#342 和 #343 都可能改 <code>workspace/members.ts</code>。给它们加一条阻塞边，或者在 exploration notes 里固定共享命名。worktree 不会消除冲突，只会把冲突推迟到 merge。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">10</span><span>线上 bug：triage → diagnosing-bugs → retro</span></summary>
+      <div class="act-body">
+        <p>用户报告：“两个人同时完成 lesson 视频时，materialize 偶发 500。” 这是别人交来的原始报告，先 triage。</p>
+        <pre><code>/triage #401</code></pre>
+        <p>triage 不只看文字，它先复现：</p>
+        <ul>
+          <li>开两个并发请求，确认 500 能出现。</li>
+          <li>检查是否已经实现、是否在 <code>.out-of-scope/</code> 被拒绝过。</li>
+          <li>写 agent brief：<code>POST /api/lessons/:id/materialize</code> 必须幂等；并发时只能有一个成功写入。</li>
+          <li>状态标为 <code>ready-for-agent</code>。</li>
+        </ul>
+        <p>然后进入诊断。Phase 1 是唯一困难的阶段：先建一个 tight loop，没有红命令就不准提假设。</p>
+        <pre><code>pnpm repro:materialize-race
+# 期望：并发两个请求，至少一个 500
+# 要求：秒级、确定性、断言这个具体症状</code></pre>
+        <p>后续阶段：</p>
+        <ol>
+          <li>最小化复现：两个请求指向同一 course，去掉无关字段。</li>
+          <li>列 3 到 5 个可证伪假设：缺唯一约束、事务隔离级别、共享临时目录。</li>
+          <li>一次变量一个探针，日志带 <code>[DEBUG-a4f2]</code>。</li>
+          <li>修复：<code>INSERT ... ON CONFLICT</code> 加 advisory lock。</li>
+          <li>回归测试先写，确认在原提交上红。</li>
+        </ol>
+        <p>修完后在同一个 session 跑 <code>/retro</code>，问“什么能预防这类 bug”。这次答案不是一句提醒，而是并发 materialize 的 CI 测试和“新写接口必须有幂等测试”的检查。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">11</span><span>代码健康：improve-codebase-architecture</span></summary>
+      <div class="act-body">
+        <p>审批功能做完后，代码里出现一个信号：<code>materializeLesson</code> 的逻辑散在三个 route 和两个 job 里。跑一次巡检。</p>
+        <pre><code>/improve-codebase-architecture "how can we make the approval feature easy?"</code></pre>
+        <p>它不改代码，只产出临时 HTML 报告和候选。一个候选：</p>
+        <pre><code>深模块：LessonMaterializer
+问题：materialize 流程在 5 个调用方重复，测试要分别 mock
+删除测试：删掉它，复杂度会回到 5 个调用方，而不是消失
+收益：locality 提高，审批发布路径只需要观察一个接缝</code></pre>
+        <p>选中候选后，用 <code>grill-with-docs</code> 把约束问清，用 <code>codebase-design</code> 的词汇讨论 module、interface、depth、seam、adapter。然后回到主链：</p>
+        <pre><code>/to-spec
+/to-tickets
+/implement</code></pre>
+        <p>这不是“重构周”，而是一个候选 idea 重新进入主链。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">12</span><span>人工步骤：wizard 生成交互式向导</span></summary>
+      <div class="act-body">
+        <p>审批功能需要 staging 的 S3 bucket、Resend API key 和 webhook secret。这些只有人能点，agent 不该把步骤丢进聊天。</p>
+        <pre><code>/wizard "set up S3, Resend, and webhook secret for staging"</code></pre>
+        <p>它先读仓库里的 <code>.env*</code>、<code>docker-compose*</code> 和 GitHub Actions 里的 <code>secrets.*</code>，确认要生产哪些值，然后给你一个有序 stage 列表：</p>
+        <ol>
+          <li>创建 S3 bucket，复制 ARN。</li>
+          <li>创建 Resend API key。</li>
+          <li>把值写入 <code>.env.staging</code> 和 GitHub secrets。</li>
+          <li>跑一个最小 smoke test。</li>
+        </ol>
+        <p>agent 写脚本，不运行。你在自己的终端执行，敏感值不会进入模型上下文。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">13</span><span>上下文与交接：什么时候 clear、handoff、compact</span></summary>
+      <div class="act-body">
+        <p>这个项目里每个边界都做一次选择：</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>边界</th><th>选择</th><th>原因</th></tr></thead>
+            <tbody>
+              <tr><td>grilling → to-spec → to-tickets</td><td>Continue</td><td>下一阶段需要访谈的原始推理，不能丢</td></tr>
+              <tr><td>to-tickets → 每张 implement</td><td>/clear</td><td>每张票自包含，上一张的上下文可丢弃</td></tr>
+              <tr><td>主线程 → prototype 目录</td><td>/handoff</td><td>换目录，原型上下文不该污染主线程</td></tr>
+              <tr><td>Claude Code → Codex</td><td>/handoff</td><td>换 harness，旧上下文不可见</td></tr>
+              <tr><td>同一 harness，继续下一阶段</td><td>/compact</td><td>相关上下文还要用，但窗口需要压缩</td></tr>
+              <tr><td>code review 或 research</td><td>subagent</td><td>任务边界紧，可以 AFK</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>顺序不要反：先问能不能继续，再问能不能 clear，再问有没有东西要移动，再问能不能 AFK，最后才是 compact。</p>
+        <p>合并冲突不再有专用技能。<code>resolving-merge-conflicts</code> 在 v1.3.0 已移除，冲突交给普通 git 加 agent 工作流处理。</p>
+      </div>
+    </details>
+
+    <details class="act">
+      <summary><span class="act-num">14</span><span>沟通与学习：teach、wait-what、writing-for-agents</span></summary>
+      <div class="act-body">
+        <p>做审批功能时，你需要理解 Postgres row-level security。不要在主线程里边做边学，开一个独立教学工作区：</p>
+        <pre><code>mkdir learn-rls
+cd learn-rls
+/teach "Postgres row-level security for multi-tenant workspaces"</code></pre>
+        <p>它先访谈 mission，再建 <code>RESOURCES.md</code>、<code>lessons/*.html</code>、<code>learning-records/*.md</code>。下一节课在新 session 里说“next lesson”即可继续。</p>
+        <p>当 agent 说“RLS policy 使用 security definer function 和 leakproof wrapper”而你没听懂：</p>
+        <pre><code>/wait-what</code></pre>
+        <p>它会把这句话用更少的词和缺失的上下文重讲一遍，并优先使用 <code>GLOSSARY.md</code> 里的词。</p>
+        <p>最后，把团队的 agent 规则写短：</p>
+        <pre><code>/writing-for-agents
+
+为这个仓库写一份 AGENTS.md：
+- 安装、测试、typecheck 命令
+- 哪些目录不能直接 import
+- 新接口必须有幂等测试
+- PR body 用 Summary / Evidence / Merge Danger
+- 不要写通用的“写好代码”建议</code></pre>
+        <p>目标是删掉 no-op，不是把文档写长。</p>
+      </div>
+    </details>
+  </div>
+
+  <h3>功能点覆盖</h3>
+  <p class="section-lede">这个例子覆盖了 27 个推广技能。非推广桶是可选扩展，不在主链上。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>技能</th><th>例子中的位置</th><th>它产出了什么</th></tr></thead>
+      <tbody>
+        <tr><td>ask-matt</td><td>Act 00</td><td>把四种工作分到四条 flow</td></tr>
+        <tr><td>setup-matt-pocock-skills</td><td>Act 01</td><td><code>docs/agents/*.md</code> 和标签映射</td></tr>
+        <tr><td>grill-with-docs</td><td>Act 02</td><td>共识、<code>GLOSSARY.md</code>、ADR</td></tr>
+        <tr><td>grilling</td><td>Act 02, 07</td><td>按 frontier 分轮的访谈</td></tr>
+        <tr><td>grill-me</td><td>Act 02 的无仓库替代</td><td>清晰计划，不写文件</td></tr>
+        <tr><td>domain-modeling</td><td>Act 02</td><td>Version、Materialization 等术语和 ADR</td></tr>
+        <tr><td>codebase-design</td><td>Act 11</td><td>LessonMaterializer 的 module、seam、depth 讨论</td></tr>
+        <tr><td>prototype</td><td>Act 03</td><td>抽屉 vs 页面的可运行原型</td></tr>
+        <tr><td>research</td><td>Act 04</td><td>Vercel Blob 条件写入的引用文件</td></tr>
+        <tr><td>to-questionnaire</td><td>Act 05</td><td>角色权限问卷</td></tr>
+        <tr><td>to-spec</td><td>Act 08</td><td>团队工作区的 spec issue</td></tr>
+        <tr><td>to-tickets</td><td>Act 08</td><td>6 张带阻塞边的 tracer-bullet 票</td></tr>
+        <tr><td>implement</td><td>Act 06, 09</td><td>version history 和逐票构建</td></tr>
+        <tr><td>tdd</td><td>Act 06, 09</td><td>红绿切片和回归测试</td></tr>
+        <tr><td>code-review</td><td>Act 06, 09</td><td>Standards 和 Spec 两轴报告</td></tr>
+        <tr><td>implement-spec</td><td>Act 09</td><td>并行构建和 integration branch</td></tr>
+        <tr><td>pr</td><td>Act 06</td><td>Summary、Evidence、Merge Danger</td></tr>
+        <tr><td>retro</td><td>Act 06, 10</td><td>并发测试和 reviewer 标准</td></tr>
+        <tr><td>triage</td><td>Act 10</td><td>#401 的复现和 agent brief</td></tr>
+        <tr><td>diagnosing-bugs</td><td>Act 10</td><td>tight loop、根因、回归测试</td></tr>
+        <tr><td>wayfinder</td><td>Act 07</td><td>团队审批的决策地图</td></tr>
+        <tr><td>improve-codebase-architecture</td><td>Act 11</td><td>LessonMaterializer 候选</td></tr>
+        <tr><td>wizard</td><td>Act 12</td><td>S3、Resend、webhook 的 bash 向导</td></tr>
+        <tr><td>handoff</td><td>Act 03, 13</td><td>prototype 往返和跨 harness 交接</td></tr>
+        <tr><td>wait-what</td><td>Act 14</td><td>RLS 解释的 re-pitch</td></tr>
+        <tr><td>teach</td><td>Act 14</td><td>RLS 教学工作区</td></tr>
+        <tr><td>writing-for-agents</td><td>Act 14</td><td>短而具体的 AGENTS.md</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout warn">
+    <p><b>归档与可选：</b><code>resolving-merge-conflicts</code> 已归档，没有替代技能。<code>in-progress</code> 的 loop-me、writing-fragments、writing-shape、writing-beats、claude-handoff、setup-ts-deep-modules，以及 <code>misc</code> 的四个工具，都不在主链上，按需单独使用。</p>
+  </div>
+</section>
+
+<section>
+  <h2>建议的第一次实操</h2>
+  <p class="section-lede">读完 1 到 19 后，用一个真实的小功能跑一遍。不要先跑完整清单。</p>
+  <ul class="checks">
+    <li>在目标仓库运行 <code>/setup-matt-pocock-skills</code>，确认 <code>docs/agents/</code> 下三个文件出现，并手动创建 tracker 标签。</li>
+    <li>拿起一个你熟悉的小需求，在仓库里手打 <code>/grill-with-docs</code>，观察 <code>GLOSSARY.md</code> 是否在访谈过程中逐条变化。</li>
+    <li>如果需求跨多个 session，接着在同一上下文里运行 <code>/to-spec</code>，不要 clear；再运行 <code>/to-tickets</code>，检查每张票的 “demo 什么”。</li>
+    <li>清空上下文，按票运行 <code>/implement</code>。在 trace 里确认它调用了 <code>tdd</code>，并在最后调用了 <code>code-review</code>。</li>
+    <li>commit 后，在干净 session 里运行一次 <code>/code-review</code>，固定点用分支起点。对比两次 review 的差异。</li>
+    <li>合并或开 PR 前，用 <code>/pr</code> 生成 body，检查 Summary 是否一张图就能看懂、Evidence 是否有前后对比、Merge Danger 是否明确。</li>
+    <li>最后运行 <code>/retro</code>，只接受能指向具体失败时刻的候选，把机械错误变成检查，而不是继续加 <code>CLAUDE.md</code> 句子。</li>
+  </ul>
+</section>
+
+<footer>
+  <p>本地文档索引：<a href="docs/engineering/ask-matt.md">docs/engineering/ask-matt.md</a> · <a href="docs/productivity/grilling.md">docs/productivity/grilling.md</a> · <a href="skills/engineering/README.md">skills/engineering/README.md</a> · <a href="skills/productivity/README.md">skills/productivity/README.md</a></p>
+  <p>读法：docs 负责定位，<code>SKILL.md</code> 负责行为。两者冲突时以 <code>SKILL.md</code> 为准。</p>
+</footer>
+
+</div>
+
+<button class="doc-panel-open" id="docPanelOpen" type="button">打开中文文档</button>
+
+<aside class="doc-panel" id="docPanel" aria-label="文档中文翻译">
+  <div class="doc-panel-head">
+    <div>
+      <span class="doc-panel-kicker">AI 中文翻译 · 点击左侧文档切换</span>
+      <h2 class="doc-panel-title" id="docPanelTitle">ask-matt</h2>
+    </div>
+    <div class="doc-panel-actions">
+      <button id="docPanelMin" type="button" title="最小化" aria-label="最小化">−</button>
+      <button id="docPanelClose" type="button" title="关闭" aria-label="关闭">×</button>
+    </div>
+  </div>
+  <div class="doc-panel-tools">
+    <div class="font-controls">
+      <span>字号</span>
+      <button id="docFontMinus" type="button" title="减小字号">A−</button>
+      <button id="docFontPlus" type="button" title="增大字号">A+</button>
+    </div>
+    <a id="docPanelSource" href="docs/engineering/ask-matt.md" target="_blank" rel="noopener">英文原文</a>
+  </div>
+  <div class="doc-panel-body" id="docPanelBody">
+    <div class="doc-empty"><div><strong>正在载入</strong><p>选择左侧任意文档，中文翻译会显示在这里。</p></div></div>
+  </div>
+  <div class="doc-panel-resize" id="docPanelResize" title="拖动调整宽度"></div>
+</aside>
+
+<script src="reading-guide-marked.js"></script>
+<script src="reading-guide-data.js"></script>
+<script>
+(function () {
+  const panel = document.getElementById("docPanel");
+  const body = document.getElementById("docPanelBody");
+  const titleEl = document.getElementById("docPanelTitle");
+  const sourceEl = document.getElementById("docPanelSource");
+  const openBtn = document.getElementById("docPanelOpen");
+  const closeBtn = document.getElementById("docPanelClose");
+  const minBtn = document.getElementById("docPanelMin");
+  const resizeEl = document.getElementById("docPanelResize");
+  const docs = window.SKILL_DOCS || {};
+  let activeLink = null;
+
+  function normalize(href) {
+    let h = (href || "").split("#")[0].split("?")[0];
+    try { h = decodeURIComponent(h); } catch (e) {}
+    return h.replace(/^\.\//, "");
+  }
+
+  function toRepoKey(href) {
+    let h = href || "";
+    try {
+      const url = new URL(h, location.href);
+      const rootPath = decodeURIComponent(new URL(".", location.href).pathname);
+      const path = decodeURIComponent(url.pathname);
+      if ((url.protocol === "file:" || url.origin === location.origin) && path.indexOf(rootPath) === 0) {
+        h = path.slice(rootPath.length);
+      }
+    } catch (e) {}
+    return normalize(h);
+  }
+
+  function docKeyForHref(href) {
+    const h = toRepoKey(href);
+    if (docs[h]) return h;
+    const skill = h.match(/^skills\/(engineering|productivity)\/([^/]+)\/SKILL\.md$/i);
+    if (skill) {
+      const candidate = "docs/" + skill[1] + "/" + skill[2] + ".md";
+      if (docs[candidate]) return candidate;
+    }
+    return /\.md($|[#?])/i.test(h) ? h : null;
+  }
+
+  function fixRelativeLinks(key) {
+    const base = new URL(key, location.href);
+    body.querySelectorAll("a[href]").forEach(function (a) {
+      const href = a.getAttribute("href");
+      if (!href || /^(https?:|#|mailto:|file:)/i.test(href)) return;
+      try { a.setAttribute("href", new URL(href, base).href); } catch (e) {}
+    });
+  }
+
+  function displayNameForKey(key) {
+    const skill = key.match(/^skills\/(?:engineering|productivity|in-progress|misc|deprecated)\/([^/]+)\/SKILL\.md$/i);
+    if (skill) return skill[1];
+    return key.split("/").pop().replace(/\.md$/i, "");
+  }
+
+  function sourceUrl(key) {
+    if (/^https?:/i.test(key)) return key;
+    return "https://github.com/mattpocock/skills/blob/main/" + key.split("/").map(encodeURIComponent).join("/");
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function render(markdown) {
+    if (window.marked && typeof window.marked.parse === "function") {
+      return window.marked.parse(markdown, { gfm: true, breaks: false });
+    }
+    return "<pre>" + escapeHtml(markdown) + "</pre>";
+  }
+
+  function wrapTables() {
+    body.querySelectorAll("table").forEach(function (table) {
+      if (table.parentElement && table.parentElement.classList.contains("doc-table-wrap")) return;
+      const wrap = document.createElement("div");
+      wrap.className = "doc-table-wrap";
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+  }
+
+  function setActive(href) {
+    if (activeLink) activeLink.classList.remove("active-doc");
+    activeLink = null;
+    const target = toRepoKey(href);
+    document.querySelectorAll("a[href]").forEach(function (a) {
+      if (toRepoKey(a.getAttribute("href")) === target) {
+        a.classList.add("active-doc");
+        if (!activeLink) activeLink = a;
+      }
+    });
+  }
+
+  function openDoc(href, push) {
+    const key = docKeyForHref(href);
+    if (!key) return false;
+    const doc = docs[key];
+    const name = doc ? doc.title : displayNameForKey(key);
+    titleEl.textContent = name;
+    if (doc) {
+      body.innerHTML = render(doc.markdown);
+      wrapTables();
+      fixRelativeLinks(key);
+      sourceEl.href = sourceUrl(key);
+      sourceEl.hidden = false;
+    } else {
+      body.innerHTML = '<div class="doc-empty"><div><strong>这篇还没有中文翻译</strong><p>这个文件不在中文翻译覆盖范围内。你可以用下面的“英文原文”打开它。</p></div></div>';
+      sourceEl.href = sourceUrl(key);
+      sourceEl.hidden = false;
+    }
+    panel.hidden = false;
+    panel.classList.remove("minimized");
+    document.body.classList.add("panel-open");
+    body.scrollTop = 0;
+    setActive(href);
+    if (push) {
+      try { history.pushState(null, "", "#doc=" + encodeURIComponent(key)); } catch (e) {}
+    }
+    return true;
+  }
+
+  function closePanel() {
+    panel.hidden = true;
+    document.body.classList.remove("panel-open");
+    if (location.hash.indexOf("#doc=") === 0) {
+      try { history.pushState(null, "", location.pathname + location.search); } catch (e) {}
+    }
+  }
+
+  document.addEventListener("click", function (event) {
+    const link = event.target.closest ? event.target.closest("a[href]") : null;
+    if (!link) return;
+    const href = link.getAttribute("href");
+    if (!href || href.startsWith("#") || href.startsWith("mailto:")) return;
+    let internal = false;
+    try {
+      const url = new URL(href, location.href);
+      internal = url.protocol === "file:" || url.origin === location.origin;
+    } catch (e) {}
+    if (!internal || !/\.md($|[#?])/i.test(href)) return;
+    const key = docKeyForHref(href);
+    if (!key) return;
+    event.preventDefault();
+    openDoc(href, true);
+  });
+
+  closeBtn.addEventListener("click", closePanel);
+  openBtn.addEventListener("click", function () {
+    openDoc(activeLink ? activeLink.getAttribute("href") : "docs/engineering/ask-matt.md", false);
+  });
+  minBtn.addEventListener("click", function () { panel.classList.toggle("minimized"); });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !panel.hidden) closePanel();
+  });
+
+  let fontSize = 15;
+  document.getElementById("docFontMinus").addEventListener("click", function () {
+    fontSize = Math.max(12, fontSize - 1);
+    document.documentElement.style.setProperty("--doc-font-size", fontSize + "px");
+  });
+  document.getElementById("docFontPlus").addEventListener("click", function () {
+    fontSize = Math.min(21, fontSize + 1);
+    document.documentElement.style.setProperty("--doc-font-size", fontSize + "px");
+  });
+
+  let dragging = false;
+  resizeEl.addEventListener("pointerdown", function (event) {
+    dragging = true;
+    try { resizeEl.setPointerCapture(event.pointerId); } catch (e) {}
+    event.preventDefault();
+  });
+  resizeEl.addEventListener("pointermove", function (event) {
+    if (!dragging) return;
+    const right = panel.getBoundingClientRect().right;
+    const width = Math.min(Math.max(360, right - event.clientX), window.innerWidth * 0.82);
+    document.documentElement.style.setProperty("--panel-w", width + "px");
+  });
+  resizeEl.addEventListener("pointerup", function () { dragging = false; });
+  resizeEl.addEventListener("pointercancel", function () { dragging = false; });
+
+  const initial = decodeURIComponent(location.hash.replace(/^#doc=/, ""));
+  openDoc(initial && docs[initial] ? initial : "docs/engineering/ask-matt.md", false);
+})();
+</script>
+</body>
+</html>
