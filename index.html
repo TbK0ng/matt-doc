@@ -623,7 +623,7 @@
     <a href="#traps">常见坑</a>
   </nav>
   <p class="panel-hint">点击任意文档名，右侧浮窗载入中文翻译。拖动浮窗左边缘可以调整宽度，<kbd>Esc</kbd> 关闭。</p>
-  <p class="mobile-hint">手机上点文档名会全屏打开中文翻译；表格可以左右滑动查看完整内容。</p>
+  <p class="mobile-hint">手机上点文档名会全屏打开中文翻译；返回键先关闭浮窗，再按一次才退出网页。表格可以左右滑动查看完整内容。</p>
 </header>
 
 <section id="how">
@@ -1471,6 +1471,7 @@ cd learn-rls
   const resizeEl = document.getElementById("docPanelResize");
   const docs = window.SKILL_DOCS || {};
   let activeLink = null;
+  let panelHistory = false;
 
   function normalize(href) {
     let h = (href || "").split("#")[0].split("?")[0];
@@ -1557,7 +1558,7 @@ cd learn-rls
     });
   }
 
-  function openDoc(href, push) {
+  function openDoc(href, historyMode) {
     const key = docKeyForHref(href);
     if (!key) return false;
     const doc = docs[key];
@@ -1579,19 +1580,46 @@ cd learn-rls
     document.body.classList.add("panel-open");
     body.scrollTop = 0;
     setActive(href);
-    if (push) {
-      try { history.pushState(null, "", "#doc=" + encodeURIComponent(key)); } catch (e) {}
+    if (historyMode === "push" || historyMode === "replace") {
+      const state = { panel: true, doc: key };
+      const hash = "#doc=" + encodeURIComponent(key);
+      try {
+        if (historyMode === "push") history.pushState(state, "", hash);
+        else history.replaceState(state, "", hash);
+        panelHistory = true;
+      } catch (e) {}
     }
     return true;
   }
 
-  function closePanel() {
+  function hidePanel() {
     panel.hidden = true;
     document.body.classList.remove("panel-open");
+  }
+
+  function closePanel() {
+    hidePanel();
+    if (panelHistory && history.state && history.state.panel) {
+      panelHistory = false;
+      try { history.back(); } catch (e) {}
+      return;
+    }
+    panelHistory = false;
     if (location.hash.indexOf("#doc=") === 0) {
-      try { history.pushState(null, "", location.pathname + location.search); } catch (e) {}
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
     }
   }
+
+  window.addEventListener("popstate", function (event) {
+    const state = event.state;
+    if (state && state.panel && state.doc) {
+      panelHistory = true;
+      openDoc(state.doc, "none");
+    } else {
+      panelHistory = false;
+      hidePanel();
+    }
+  });
 
   document.addEventListener("click", function (event) {
     const link = event.target.closest ? event.target.closest("a[href]") : null;
@@ -1607,12 +1635,12 @@ cd learn-rls
     const key = docKeyForHref(href);
     if (!key) return;
     event.preventDefault();
-    openDoc(href, true);
+    openDoc(href, panel.hidden ? "push" : "replace");
   });
 
   closeBtn.addEventListener("click", closePanel);
   openBtn.addEventListener("click", function () {
-    openDoc(activeLink ? activeLink.getAttribute("href") : "docs/engineering/ask-matt.md", false);
+    openDoc(activeLink ? activeLink.getAttribute("href") : "docs/engineering/ask-matt.md", panel.hidden ? "push" : "replace");
   });
   minBtn.addEventListener("click", function () { panel.classList.toggle("minimized"); });
   document.addEventListener("keydown", function (event) {
@@ -1645,7 +1673,15 @@ cd learn-rls
   resizeEl.addEventListener("pointercancel", function () { dragging = false; });
 
   const initial = decodeURIComponent(location.hash.replace(/^#doc=/, ""));
-  openDoc(initial && docs[initial] ? initial : "docs/engineering/ask-matt.md", false);
+  const startKey = initial && docs[initial] ? initial : "docs/engineering/ask-matt.md";
+  try {
+    if (initial) history.replaceState({ panel: false }, "", location.pathname + location.search);
+    history.pushState({ panel: true, doc: startKey }, "", "#doc=" + encodeURIComponent(startKey));
+    panelHistory = true;
+  } catch (e) {
+    panelHistory = false;
+  }
+  openDoc(startKey, "none");
 })();
 </script>
 </body>

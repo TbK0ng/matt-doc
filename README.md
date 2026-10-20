@@ -35,6 +35,7 @@ reading-guide-marked.js   Markdown 渲染器
 - `Esc` 或 `×` 关闭，底部按钮重新打开
 - `#doc=docs/engineering/to-tickets.md` 形式的深链可以直接打开某篇
 - 手机端自动变成全屏阅读页，表格支持横向滑动
+- 手机返回键先关闭浮窗，再按一次才退出网页
 
 ## 翻译说明
 
